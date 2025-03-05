@@ -1,90 +1,448 @@
 @import "tailwindcss";
 
-body {
-  font-family: "Inter", sans-serif;
+/* Base theme variables */
+:root {
+  /* Base colors */
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  /* Primary colors */
+  --primary-500: #FF7000;
+  --primary-100: #FFF1E6;
+  
+  /* Dark theme colors */
+  --dark-100: #000000;
+  --dark-200: #0F1117;
+  --dark-300: #151821;
+  --dark-400: #212734;
+  --dark-500: #101012;
+  
+  /* Light theme colors */
+  --light-900: #FFFFFF;
+  --light-800: #F4F6F8;
+  --light-850: #FDFDFD;
+  --light-700: #DCE3F1;
+  --light-500: #7B8EC8;
+  --light-400: #858EAD;
+  
+  /* Accent colors */
+  --accent-blue: #1DA1F2;
+  
+  /* Container settings */
+  --container-padding: 2rem;
+  --container-max-width: 1400px;
+  
+  /* Font families */
+  --font-inter: 'Inter', sans-serif;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+  
+  /* Box shadows */
+  --shadow-light-100: 0px 12px 20px 0px rgba(184, 184, 184, 0.03), 0px 6px 12px 0px rgba(184, 184, 184, 0.02);
+  --shadow-light-200: 10px 10px 20px 0px rgba(218, 213, 213, 0.10);
+  --shadow-light-300: -10px 10px 20px 0px rgba(218, 213, 213, 0.10);
+  --shadow-dark-100: 0px 2px 10px 0px rgba(46, 52, 56, 0.10);
+  --shadow-dark-200: 2px 0px 20px 0px rgba(39, 36, 36, 0.04);
 }
 
+/* Dark mode theme variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Global styles */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter);
+}
+
+/* Typography styles */
+.h1-bold {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 42px;
+  letter-spacing: -0.05em;
+}
+
+.h2-bold {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 31.2px;
+}
+
+.h2-semibold {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 31.2px;
+}
+
+.h3-bold {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.h3-semibold {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24.8px;
+}
+
+.base-medium {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 25.2px;
+}
+
+.base-semibold {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 25.2px;
+}
+
+.base-bold {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 140%;
+}
+
+.paragraph-regular {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22.4px;
+}
+
+.paragraph-medium {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22.4px;
+}
+
+.paragraph-semibold {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20.8px;
+}
+
+.body-regular {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19.6px;
+}
+
+.body-medium {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18.2px;
+}
+
+.body-semibold {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18.2px;
+}
+
+.small-regular {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15.6px;
+}
+
+.small-medium {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15.6px;
+}
+
+.small-semibold {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 15.6px;
+}
+
+.subtle-medium {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 13px !important;
+}
+
+.subtle-regular {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 13px;
+}
+
+/* Background theme utilities */
 .background-light850_dark100 {
-  background-color: var(--color-light-850);
+  background-color: var(--light-850);
 }
 
 .dark .background-light850_dark100 {
-  background-color: var(--color-dark-100);
+  background-color: var(--dark-100);
 }
 
 .background-light900_dark200 {
-  background-color: var(--color-light-900);
+  background-color: var(--light-900);
 }
 
 .dark .background-light900_dark200 {
-  background-color: var(--color-dark-200);
+  background-color: var(--dark-200);
 }
 
 .background-light900_dark300 {
-  background-color: var(--color-light-900);
+  background-color: var(--light-900);
 }
 
 .dark .background-light900_dark300 {
-  background-color: var(--color-dark-300);
+  background-color: var(--dark-300);
+}
+
+.background-light800_darkgradient {
+  background-color: var(--light-800);
+}
+
+.dark .background-light800_darkgradient {
+  background: linear-gradient(
+    232deg,
+    rgba(23, 28, 35, 0.41) 0%,
+    rgba(19, 22, 28, 0.7) 100%
+  );
 }
 
 .background-light800_dark400 {
-  background-color: var(--color-light-800);
+  background-color: var(--light-800) !important;
 }
 
 .dark .background-light800_dark400 {
-  background-color: var(--color-dark-400);
+  background-color: var(--dark-400) !important;
 }
 
+.background-light700_dark400 {
+  background-color: var(--light-700);
+}
+
+.dark .background-light700_dark400 {
+  background-color: var(--dark-400);
+}
+
+.background-light700_dark300 {
+  background-color: var(--light-700);
+}
+
+.dark .background-light700_dark300 {
+  background-color: var(--dark-300);
+}
+
+.background-light800_dark300 {
+  background-color: var(--light-800) !important;
+}
+
+.dark .background-light800_dark300 {
+  background-color: var(--dark-300) !important;
+}
+
+/* Text theme utilities */
 .text-dark100_light900 {
-  color: var(--color-dark-100);
+  color: var(--dark-100) !important;
 }
 
 .dark .text-dark100_light900 {
-  color: var(--color-light-900);
+  color: var(--light-900) !important;
+}
+
+.text-dark200_light900 {
+  color: var(--dark-200);
+}
+
+.dark .text-dark200_light900 {
+  color: var(--light-900);
+}
+
+.text-dark200_light800 {
+  color: var(--dark-200) !important;
+}
+
+.dark .text-dark200_light800 {
+  color: var(--light-800) !important;
+}
+
+.text-dark300_light700 {
+  color: var(--dark-300);
+}
+
+.dark .text-dark300_light700 {
+  color: var(--light-700);
+}
+
+.text-dark400_light700 {
+  color: var(--dark-400);
+}
+
+.dark .text-dark400_light700 {
+  color: var(--light-700);
+}
+
+.text-dark500_light700 {
+  color: var(--dark-500) !important;
+}
+
+.dark .text-dark500_light700 {
+  color: var(--light-700) !important;
+}
+
+.text-dark500_light500 {
+  color: var(--dark-500);
+}
+
+.dark .text-dark500_light500 {
+  color: var(--light-500);
+}
+
+.text-dark300_light900 {
+  color: var(--dark-300) !important;
+}
+
+.dark .text-dark300_light900 {
+  color: var(--light-900) !important;
+}
+
+.text-dark400_light800 {
+  color: var(--dark-400);
+}
+
+.dark .text-dark400_light800 {
+  color: var(--light-800);
+}
+
+.text-light400_light500 {
+  color: var(--light-400) !important;
+}
+
+.dark .text-light400_light500 {
+  color: var(--light-500) !important;
 }
 
 .text-dark400_light500 {
-  color: var(--color-dark-400);
+  color: var(--dark-400);
 }
 
 .dark .text-dark400_light500 {
-  color: var(--color-light-500);
+  color: var(--light-500);
 }
 
+.text-dark400_light900 {
+  color: var(--dark-400) !important;
+}
+
+.dark .text-dark400_light900 {
+  color: var(--light-900) !important;
+}
+
+/* Border utilities */
+.light-border {
+  border-color: var(--light-800);
+}
+
+.dark .light-border {
+  border-color: var(--dark-300);
+}
+
+.light-border-2 {
+  border-color: var(--light-700) !important;
+}
+
+.dark .light-border-2 {
+  border-color: var(--dark-400) !important;
+}
+
+/* Placeholder utilities */
+.placeholder::placeholder {
+  color: var(--light-400);
+}
+
+.dark .placeholder::placeholder {
+  color: var(--light-500);
+}
+
+/* Invert colors utility */
+.invert-colors {
+  filter: invert(1);
+}
+
+.dark .invert-colors {
+  filter: invert(0);
+}
+
+/* Shadow utilities */
+.shadow-light100_dark100 {
+  box-shadow: var(--shadow-light-100);
+}
+
+.dark .shadow-light100_dark100 {
+  box-shadow: var(--shadow-dark-100);
+}
+
+.shadow-light100_darknone {
+  box-shadow: var(--shadow-light-100);
+}
+
+.dark .shadow-light100_darknone {
+  box-shadow: none;
+}
+
+/* Component styling */
 .card-wrapper {
-  background-color: var(--color-light-900);
+  background-color: var(--light-900);
   box-shadow: var(--shadow-light-100);
 }
 
 .dark .card-wrapper {
-  background: var(--dark-gradient);
+  background: linear-gradient(
+    232deg,
+    rgba(23, 28, 35, 0.41) 0%,
+    rgba(19, 22, 28, 0.7) 100%
+  );
+  box-shadow: var(--shadow-dark-100);
 }
 
 .btn {
-  background-color: var(--color-light-800);
+  background-color: var(--light-800) !important;
 }
 
 .dark .btn {
-  background-color: var(--color-dark-300);
+  background-color: var(--dark-300) !important;
 }
 
 .btn-secondary {
-  background-color: var(--color-light-800);
+  background-color: var(--light-800) !important;
 }
 
 .dark .btn-secondary {
-  background-color: var(--color-dark-400);
+  background-color: var(--dark-400) !important;
 }
 
 .btn-tertiary {
-  background-color: var(--color-light-700);
+  background-color: var(--light-700) !important;
 }
 
 .dark .btn-tertiary {
-  background-color: var(--color-dark-300);
+  background-color: var(--dark-300) !important;
 }
 
+.tab {
+  min-height: 100%;
+  background-color: var(--light-800);
+  color: var(--light-500);
+}
+
+.dark .tab {
+  background-color: var(--dark-400);
+}
+
+/* Layout utilities */
 .flex-center {
   display: flex;
   justify-content: center;
@@ -103,15 +461,17 @@ body {
   align-items: center;
 }
 
-.tab {
-  min-height: 100%;
-  background-color: var(--color-light-800);
+/* No focus outline */
+.no-focus {
+  outline: none;
 }
 
-.dark .tab {
-  background-color: var(--color-dark-400);
+.no-focus:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
+/* Gradients */
 .primary-gradient {
   background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
 }
@@ -139,59 +499,7 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Markdown Styling */
-.markdown {
-  max-width: 100%;
-}
-
-/* Dark mode for paragraph text inside prose */
-.dark .markdown p {
-  color: var(--color-light-700);
-}
-
-.markdown a {
-  color: #1da1f2;
-}
-
-.markdown a,
-code {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  padding: 2px;
-  color: #ff7000 !important;
-}
-
-.markdown pre {
-  display: grid;
-  width: 100%;
-}
-
-.markdown pre code {
-  width: 100%;
-  display: block;
-  overflow-x: auto;
-  color: inherit !important;
-}
-
-/* Utility Classes */
-.no-focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.no-focus:focus-visible {
-  outline: 0;
-  outline-color: transparent;
-}
-
-.active-theme {
-  filter: invert(53%) sepia(98%) saturate(3332%) hue-rotate(0deg)
-    brightness(104%) contrast(106%) !important;
-}
-
-/* Scrollbar Styles */
+/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
   height: 3px;
@@ -211,13 +519,75 @@ code {
   background: #555;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Markdown styling */
+.markdown {
+  max-width: 100%;
+}
+
+.dark .markdown {
+  color: var(--light-700);
+}
+
+.markdown a {
+  color: var(--accent-blue);
+}
+
+.markdown a,
+.markdown code {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  padding: 2px;
+  color: var(--primary-500) !important;
+}
+
+.markdown pre {
+  display: grid;
+  width: 100%;
+}
+
+.markdown pre code {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  color: inherit !important;
+}
+
+/* Active theme indicator */
+.active-theme {
+  filter: invert(53%) sepia(98%) saturate(3332%) hue-rotate(0deg) brightness(104%) contrast(106%) !important;
+}
+
+/* Hash span for anchor links */
+.hash-span {
+  margin-top: -140px;
+  padding-bottom: 140px;
+  display: block;
+}
+
+/* Hide scrollbar utility classes */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Clerk customization */
+.cl-internal-b3fm6y {
+  background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+}
+
+/* For modern browsers that support color scheme */
+@supports (color-scheme: dark light) {
+  :root {
+    color-scheme: light dark;
+  }
 }
