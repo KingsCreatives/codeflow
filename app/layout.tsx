@@ -8,9 +8,9 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Inter, Space_Grotesk } from "next/font/google";
-import "./globals.css";
 import ThemeProvider from "@/context/ThemeProvider";
-import ThemedMain from "@/components/ThemedMain";
+import ThemedMain from "@/components/shared/ThemedMain";
+import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",

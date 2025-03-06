@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  use,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface ThemeContextType {
   theme: string;
@@ -22,17 +16,16 @@ export default function ThemeProvider({
 }) {
   const [theme, setTheme] = useState("");
 
-  useEffect(() => {
-    const localTheme = window.localStorage.getItem("theme");
-    if (localTheme) {
-      setTheme(localTheme);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const localTheme = window.localStorage.getItem("theme");
+  //   console.log("localTheme", localTheme);
+  //   if (localTheme) {
+  //     setTheme(localTheme);
+  //   }
+  // }, []);
 
   const handleThemeChange = () => {
-    // const newTheme = theme === "light" ? "dark" : "light"
-    // setTheme(newTheme)
-    // window.localStorage.setItem("theme", newTheme)
+    console.log("theme", theme);
     if (theme === "light") {
       setTheme("dark");
       document.documentElement.classList.add("light");
