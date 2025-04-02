@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,7 @@
     "@clerk/nextjs": "^6.12.4",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@tailwindcss/postcss": "^4.0.12",
     "autoprefixer": "^10.4.20",
