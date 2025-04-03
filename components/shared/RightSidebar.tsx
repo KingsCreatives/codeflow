@@ -1,39 +1,39 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import Tag from "./Tag"
+import Tag from "./Tag";
 const topQuestions = [
   {
-    _id: 1,
+    _id: "1",
     title:
       "How to Ensure Unique User Profile with ON CONFLICT in PostgreSQL Using Drizzle ORM?",
   },
   {
-    _id: 2,
+    _id: "2",
     title:
       "What are the benefits and trade-offs of using Server-Side Rendering (SSR) in Next.js?",
   },
   {
-    _id: 3,
+    _id: "3",
     title: "How to center a div?",
   },
   {
-    _id: 4,
+    _id: "4",
     title:
       "Node.js res.json() and res.send(), not working but still able to change status code",
   },
   {
-    _id: 5,
+    _id: "5",
     title: "ReactJs or NextJs for begginers i ask for advice",
   },
 ];
 
 const popularTag = [
-  { _id: 1, name: "javascript", totalQuestion: 5 },
-  { _id: 2, name: "java", totalQuestion: 8 },
-  { _id: 3, name: "php", totalQuestion: 2 },
-  { _id: 4, name: "react", totalQuestion: 85 },
-  { _id: 5, name: "rust", totalQuestion: 1 },
+  { _id: "1", name: "javascript", totalQuestion: 5 },
+  { _id: "2", name: "java", totalQuestion: 8 },
+  { _id: "3", name: "php", totalQuestion: 2 },
+  { _id: "4", name: "react", totalQuestion: 85 },
+  { _id: "5", name: "rust", totalQuestion: 1 },
 ];
 
 const RightSidebar = () => {
