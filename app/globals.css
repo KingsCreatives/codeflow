@@ -306,6 +306,10 @@ html.dark .background-light800_dark300 {
   color: var(--light-900);
 }
 
+.text-light500{
+  color: var(--light-500)
+}
+
 .text-dark100 {
   color: var(--dark-100);
 }
