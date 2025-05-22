@@ -1,0 +1,58 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String     @id @default(uuid())
+  clerkId          String     @unique
+  name             String
+  username         String     @unique
+  email            String     @unique
+  password         String?
+  bio              String?
+  picture          String
+  location         String?
+  portfolioWebsite String?
+  reputation       Int        @default(0)
+  joinedAt         DateTime   @default(now())
+
+  // Relations
+  savedQuestions   Question[] @relation("SavedQuestions")
+  questions        Question[] @relation("UserQuestions")
+  upvotedQuestions Question[] @relation("QuestionUpvotes")
+  downvotedQuestions Question[] @relation("QuestionDownvotes")
+  followedTags     Tag[]      @relation("TagFollowers")
+}
+
+model Question {
+  id          String     @id @default(uuid())
+  title       String
+  content     String
+  views       Int        @default(0)
+  createdAt   DateTime   @default(now())
+
+  // Relations
+  tags        Tag[]      @relation("QuestionTags")
+  upvotes     User[]     @relation("QuestionUpvotes")
+  downvotes   User[]     @relation("QuestionDownvotes")
+  author      User       @relation("UserQuestions", fields: [authorId], references: [id])
+  authorId    String
+  savedBy     User[]     @relation("SavedQuestions")
+}
+
+model Tag {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String
+  createdOn   DateTime   @default(now())
+
+  // Relations
+  questions   Question[] @relation("QuestionTags")
+  followers   User[]     @relation("TagFollowers")
+}

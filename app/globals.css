@@ -302,7 +302,7 @@ html.dark .background-light800_dark300 {
   color: var(--primary-100);
 }
 
-.text-light900 {
+.text-light-900 {
   color: var(--light-900);
 }
 
