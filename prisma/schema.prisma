@@ -49,7 +49,6 @@ model Question {
 model Tag {
   id          String     @id @default(uuid())
   name        String     @unique
-  description String
   createdOn   DateTime   @default(now())
 
   // Relations

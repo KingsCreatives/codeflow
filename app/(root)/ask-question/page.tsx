@@ -1,15 +1,25 @@
-import Question from '@/components/forms/Question'
-import React from 'react'
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import Question from "@/components/forms/Question";
+import { getUserById } from "@/lib/actions/user.action";
 
-const page = () => {
+export default async function Page() {
+  // const { userId } = await auth();
+  const userId = "user_clerk_123";
+
+
+  if (!userId) return redirect("/sign-in");
+
+  const user = await getUserById({ userId });
+
+  console.log(user);
+
   return (
     <div>
-      <h1 className='h1-bold text-dark100_light900'>Ask a question</h1>
-      <div className='mt-9'>
-        <Question />
+      <h1 className="h1-bold text-dark100_light900">Ask a question</h1>
+      <div className="mt-9">
+        <Question userId={userId} />
       </div>
     </div>
   );
 }
-
-export default page

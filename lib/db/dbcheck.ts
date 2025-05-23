@@ -3,7 +3,7 @@ import { prisma } from "./client";
 
 let connected = false;
 
-export async function isDatabaseConnected(): Promise<boolean> {
+export async function connectDatabase(): Promise<boolean> {
   if (!connected) {
     try {
       await prisma.$connect();
