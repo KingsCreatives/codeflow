@@ -2,6 +2,11 @@
 
 import {connectDatabase} from "../db/dbcheck"
 import { prisma } from "@/lib/db/client";
+import { GetQuestionsParams } from "./shared.types";
+
+// export async function getQuestions(params: GetQuestionsParams){
+
+// }
 
 export async function createQuestion(params:any) {
 
