@@ -58,7 +58,7 @@ export interface CreateQuestionParams {
    title: string;
    content: string;
    tags: string[];
-   authorId: string;
+   author: string;
    path: string;
 }
 
