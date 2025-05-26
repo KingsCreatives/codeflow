@@ -31,6 +31,7 @@ const Question = ({ userId } : { userId: string }) => {
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmiting] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
@@ -50,6 +51,7 @@ const Question = ({ userId } : { userId: string }) => {
         content: values.explanation,
         tags: values.tags,
         author: userId,
+        path: pathname
       });
       console.log("form values", values);
       router.push("/");

@@ -3,6 +3,7 @@
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
 import { CreateQuestionParams, GetQuestionsParams } from "./shared.types";
+import { revalidatePath } from "next/cache";
 
 
 export async function getQuestions(params: GetQuestionsParams) {
@@ -46,7 +47,7 @@ export async function getQuestions(params: GetQuestionsParams) {
 export async function createQuestion(params: CreateQuestionParams) {
   try {
     await connectDatabase();
-    const { title, content, tags, author } = params;
+    const { title, content, tags, author, path } = params;
 
     const normalizedTags = tags.map((tag: string) => tag.trim().toLowerCase());
     const tagDocuments = [];
@@ -93,7 +94,9 @@ export async function createQuestion(params: CreateQuestionParams) {
       // },
     });
 
-    return question;
+    revalidatePath(path);
+    return { question };
+
   } catch (error) {
     throw error;
   }
