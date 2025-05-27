@@ -2,7 +2,7 @@
 
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
-import { CreateQuestionParams, GetQuestionsParams } from "./shared.types";
+import { CreateQuestionParams, GetQuestionsParams } from "../shared.types";
 import { revalidatePath } from "next/cache";
 
 
