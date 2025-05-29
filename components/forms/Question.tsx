@@ -2,6 +2,8 @@
 
 import React, { useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import type { Editor as TinyMCEEditor } from "tinymce";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -28,7 +30,7 @@ const type: any = "create";
 
 const Question = ({ userId } : { userId: string }) => {
   // 1. Define your form.
-  const editorRef = useRef(null);
+  const editorRef = useRef<TinyMCEEditor | null>(null);
   const [isSubmitting, setIsSubmiting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -137,7 +139,9 @@ const Question = ({ userId } : { userId: string }) => {
               <FormControl className="mt-3.5">
                 <Editor
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
-                  onInit={(_evt, editor) => (editorRef.current = editor)}
+                  onInit={(_evt, editor) => {
+                    editorRef.current = editor;
+                  }}
                   initialValue=""
                   onBlur={field.onBlur}
                   onEditorChange={(content) => field.onChange(content)}
