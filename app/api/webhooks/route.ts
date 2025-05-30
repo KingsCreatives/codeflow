@@ -1,14 +1,56 @@
-import { createdUser, updateUser, deleteUser } from "@/lib/actions/user.action";
-import { verifyWebhook } from "@clerk/nextjs/webhooks";
-import { NextRequest, NextResponse } from "next/server";
+import { Webhook } from "svix";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import {
+  createdUser,
+  deleteUser,
+  updateUser,
+} from "@/lib/actions/user.action";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
+  const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+
+  if (!WEBHOOK_SECRET) {
+    return NextResponse.json(
+      { error: "Missing Clerk Webhook Secret" },
+      { status: 400 }
+    );
+  }
+
+  const payload = await req.text();
+  const headerPayload = await headers();
+  const svixId = headerPayload.get("svix-id");
+  const svixTimestamp = headerPayload.get("svix-timestamp");
+  const svixSignature = headerPayload.get("svix-signature");
+
+  if (!svixId || !svixTimestamp || !svixSignature) {
+    return NextResponse.json(
+      { error: "Missing Svix headers" },
+      { status: 400 }
+    );
+  }
+
+  const wh = new Webhook(WEBHOOK_SECRET);
+
+  let evt: any;
   try {
-    const evt = await verifyWebhook(req);
+    evt = wh.verify(payload, {
+      "svix-id": svixId,
+      "svix-timestamp": svixTimestamp,
+      "svix-signature": svixSignature,
+    });
+  } catch (err) {
+    console.error("Webhook verification failed:", err);
+    return NextResponse.json(
+      { error: "Invalid webhook signature" },
+      { status: 400 }
+    );
+  }
 
-    const eventType = evt.type;
+  const { type, data } = evt;
 
-    if (eventType === "user.created") {
+  try {
+    if (type=== "user.created") {
       const {
         id,
         email_addresses,
@@ -29,7 +71,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "okay", user }, { status: 201 });
     }
 
-    if (eventType === "user.updated") {
+    if (type === "user.updated") {
       const {
         id,
         email_addresses,
@@ -53,7 +95,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "okay", user }, { status: 201 });
     }
 
-    if (eventType === "user.deleted") {
+
+    if (type === "user.deleted") {
       const { id } = evt.data;
 
       const deletedUser = await deleteUser({ clerkId: id! });
@@ -64,9 +107,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return new Response("Webhook received", { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
-    console.error("Error verifying webhook:", err);
-    return new Response("Error verifying webhook", { status: 400 });
+    console.error("Webhook processing failed:", err);
+    return NextResponse.json(
+      { error: "Webhook handler error" },
+      { status: 500 }
+    );
   }
 }
