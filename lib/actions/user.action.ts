@@ -40,7 +40,8 @@ export async function updateUser(params: UpdateUserParams) {
     try {
         await connectDatabase()
         const { clerkId, updateData, path } = params;
-        const updatedUser = await prisma.user.update({
+        
+        await prisma.user.update({
             where: {
                 clerkId: clerkId
             },
@@ -65,11 +66,17 @@ export async function deleteUser(params: DeleteUserParams) {
             }
         })
 
+        if(!userToDelete) {
+            throw new Error("User not found");
+        }
+ 
+
         // Find all questions created by the userToDelete
         const userQuestions = await prisma.question.findMany({
             where: {
             authorId: userToDelete?.id
-            }
+            },
+            distinct: ['id']
         });
 
         // Delete all questions created by the userToDelete
