@@ -5,9 +5,11 @@ import { prisma } from "@/lib/db/client";
 import {
   CreateUserParams,
   DeleteUserParams,
+  GetAllUsersParams,
   UpdateUserParams,
 } from "../shared.types";
 import { revalidatePath } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function getUserById(params: any) {
   try {
@@ -95,5 +97,17 @@ export async function deleteUser(params: DeleteUserParams) {
     return deletedUser;
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function getAllUsers(params: GetAllUsersParams){
+  try {
+    await connectDatabase()
+    const {page =1, pageSize = 20, filter , searchQuery} = params
+
+    const users = await prisma.user.findMany({})
+    return {users}
+  } catch (error) {
+    console.log(error) 
   }
 }
