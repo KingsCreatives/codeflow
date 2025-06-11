@@ -2,7 +2,7 @@
 
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
-import { CreateQuestionParams, GetQuestionsParams } from "../shared.types";
+import { CreateQuestionParams, GetQuestionsParams, GetQuestionByIdParams } from "../shared.types";
 import { revalidatePath } from "next/cache";
 
 
@@ -99,5 +99,48 @@ export async function createQuestion(params: CreateQuestionParams) {
 
   } catch (error) {
     throw error;
+  }
+}
+
+export async function getQuestionById(params: GetQuestionByIdParams) {
+  try {
+    await connectDatabase();
+
+    const { questionId } = params;
+
+    const question = await prisma.question.findUnique({
+      where: { id: questionId },
+      include: {
+        tags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            clerkId: true,
+            name: true,
+            picture: true,
+          },
+        },
+        answers: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    return { question };
+  } catch (error) {
+    console.error("Error fetching question:", error);
+    return {
+      question: null,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }

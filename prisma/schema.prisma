@@ -28,6 +28,7 @@ model User {
   upvotedQuestions Question[] @relation("QuestionUpvotes")
   downvotedQuestions Question[] @relation("QuestionDownvotes")
   followedTags     Tag[]      @relation("TagFollowers")
+  answers          Answer[]   @relation("UserAnswers")
 }
 
 model Question {
@@ -44,6 +45,7 @@ model Question {
   author      User       @relation("UserQuestions", fields: [authorId], references: [id])
   authorId    String
   savedBy     User[]     @relation("SavedQuestions")
+  answers     Answer[]   @relation("QuestionToAnswers")
 }
 
 model Tag {
@@ -55,3 +57,14 @@ model Tag {
   questions   Question[] @relation("QuestionTags")
   followers   User[]     @relation("TagFollowers")
 }
+model Answer {
+  id          String     @id @default(uuid())
+  content     String
+  createdAt   DateTime   @default(now())
+
+  // Relations
+  questionId  String
+  question    Question   @relation("QuestionToAnswers", fields: [questionId], references: [id])
+  author      User       @relation("UserAnswers", fields: [authorId], references: [id])
+  authorId    String
+} 
