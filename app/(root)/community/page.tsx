@@ -27,7 +27,7 @@ const Page = async () => {
       </div>
 
       <section className="mt-12 flex flex-wrap gap-">
-        {result.users.length > 0 ? (
+        {result && result.users && result.users.length > 0 ? (
           result.users.map((user) => (
             <UserCard key={user.id} user={user}/>
           ))
