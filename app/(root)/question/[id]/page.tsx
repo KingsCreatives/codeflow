@@ -5,8 +5,14 @@ import Image from "next/image";
 import Metric from "@/components/shared/Metric";
 import { getTimeStamp } from "@/lib/utils";
 import ParsedContent from "@/components/shared/ParsedContent";
+import Tag from "@/components/shared/Tag";
 
-const page = async ({ params, searchParams }) => {
+interface PageProps {
+  params: { id: string };
+  searchParams?: Record<string, string | string[] | undefined>;
+}
+
+const page = async ({ params, searchParams }: PageProps) => {
   const result = await getQuestionById({
     questionId: params.id,
   });
@@ -20,14 +26,14 @@ const page = async ({ params, searchParams }) => {
             className="flex items-center justify-start gap-1"
           >
             <Image
-              src={result.question.author.picture}
+              src={result.question?.author.picture || "/assets/images/avatar.png"}
               alt="back"
               width={24}
               height={24}
               className="cursor-pointer rounded-full"
             />
             <p className="paragraph-semibold text-dark300_light700">
-              {result.question.author.name}
+              {result.question?.author.name}
             </p>
           </Link>
 
@@ -66,7 +72,24 @@ const page = async ({ params, searchParams }) => {
         />
       </div>
 
-      <ParsedContent data={result.question?.content} />
+      <ParsedContent data={result.question?.content ?? ""} />
+
+      <div>
+        {
+          result.question?.tags && result.question.tags.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-4">
+              {result.question.tags.map((tag) => (
+                <Tag
+                  key={tag.id}
+                  id={tag.id}
+                  name={tag.name}
+                  showCount={true}
+                />
+              ))}
+            </div>
+          )
+        }
+      </div>
     </>
   );
 };
