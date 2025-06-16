@@ -23,12 +23,14 @@ import { QuestionsSchema } from "@/lib/validations";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
 import { createQuestion } from "@/lib/actions/question.action";
+import { useTheme } from "@/context/ThemeProvider";
 
 const type: any = "create";
 
 // add interface for the props
 
-const Question = ({ userId } : { userId: string }) => {
+const Question = ({ userId }: { userId: string }) => {
+  const { theme } = useTheme();
   // 1. Define your form.
   const editorRef = useRef<TinyMCEEditor | null>(null);
   const [isSubmitting, setIsSubmiting] = useState(false);
@@ -53,7 +55,7 @@ const Question = ({ userId } : { userId: string }) => {
         content: values.explanation,
         tags: values.tags,
         author: userId,
-        path: pathname
+        path: pathname,
       });
       console.log("form values", values);
       router.push("/");
@@ -138,6 +140,7 @@ const Question = ({ userId } : { userId: string }) => {
               </FormLabel>
               <FormControl className="mt-3.5">
                 <Editor
+                  key={theme}
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                   onInit={(_evt, editor) => {
                     editorRef.current = editor;
@@ -176,6 +179,8 @@ const Question = ({ userId } : { userId: string }) => {
                       "removeformat | help",
                     content_style:
                       "body { font-family:Inter,; font-size:16px }",
+                    skin: theme === "dark" ? "oxide-dark" : "oxide",
+                    content_css: theme === "dark" ? "dark" : "light",
                   }}
                 />
               </FormControl>
