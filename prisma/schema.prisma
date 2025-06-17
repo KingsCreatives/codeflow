@@ -27,6 +27,8 @@ model User {
   questions        Question[] @relation("UserQuestions")
   upvotedQuestions Question[] @relation("QuestionUpvotes")
   downvotedQuestions Question[] @relation("QuestionDownvotes")
+  upvotedAnswers  Answer[]   @relation("AnswerUpvotes")
+  downvotedAnswers Answer[]   @relation("AnswerDownvotes")
   followedTags     Tag[]      @relation("TagFollowers")
   answers          Answer[]   @relation("UserAnswers")
 }
@@ -67,4 +69,6 @@ model Answer {
   question    Question   @relation("QuestionToAnswers", fields: [questionId], references: [id])
   author      User       @relation("UserAnswers", fields: [authorId], references: [id])
   authorId    String
+  upvotes     User[]     @relation("AnswerUpvotes")
+  downvotes   User[]     @relation("AnswerDownvotes")
 } 
