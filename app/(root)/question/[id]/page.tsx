@@ -7,6 +7,8 @@ import { getTimeStamp } from "@/lib/utils";
 import ParsedContent from "@/components/shared/ParsedContent";
 import Tag from "@/components/shared/Tag";
 import Answer from "@/components/forms/Answer";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/db/client";
 
 interface PageProps {
   params: { id: string };
@@ -15,7 +17,15 @@ interface PageProps {
 
 const page = async ({ params, searchParams }: PageProps) => {
   const result = await getQuestionById({
-    questionId: params.id,
+    questionId:params.id,
+  });
+
+  const { userId } = await auth();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      clerkId: userId ?? undefined,
+    },
   });
 
   return (
@@ -93,7 +103,11 @@ const page = async ({ params, searchParams }: PageProps) => {
           )}
         </div>
       </div>
-      <Answer />
+      <Answer
+        authorId={JSON.stringify(user?.id)}
+        question={result.question?.content ?? ""}
+        questionId={result.question?.id ?? ""}
+      />
     </>
   );
 };

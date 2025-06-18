@@ -4,11 +4,12 @@ import { CreateAnswerParams } from "../shared.types";
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
+import path from "path";
 
 export async function createAnswer(params: CreateAnswerParams) {
   try {
     await connectDatabase();
-    const { content, question, author } = params;
+    const { content, question, author, path } = params;
     const answer = await prisma.answer.create({
       data: {
         content,
@@ -30,10 +31,15 @@ export async function createAnswer(params: CreateAnswerParams) {
       },
     });
 
-    revalidatePath(`/questions/${question}`);
+    // 
+
+    revalidatePath(path);
     return { answer };
   } catch (error) {
-    console.log("Database connection error:", error);
-    throw new Error("Database connection failed");
+    console.error("Error creating answer:", error);
+    return {
+      answer: null,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }

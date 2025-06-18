@@ -16,8 +16,17 @@ import type { Editor as TinyMCEEditor } from "tinymce";
 import { useTheme } from "@/context/ThemeProvider";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { createAnswer } from "@/lib/actions/answer.action";
+import { usePathname } from "next/navigation";
 
-const Answer = () => {
+interface AnswerProps{
+  question : string,
+  authorId : string,
+  questionId: string
+}
+
+const Answer = ({ authorId, question, questionId } : AnswerProps) => {
+  const path = usePathname()
   const editorRef = useRef<TinyMCEEditor | null>(null);
   const [isSubmitting, setIsSubmiting] = useState(false);
 
@@ -29,7 +38,28 @@ const Answer = () => {
     },
   });
 
-  const handleCreateAnswer = () => {};
+  const handleCreateAnswer = async(values: z.infer<typeof AnswerSchema>) => {
+     setIsSubmiting(true);
+     try {
+       await createAnswer({
+         content: values.answer,
+         question: questionId,
+         author: JSON.parse(authorId),
+         path
+       });
+
+       form.reset()
+       if(editorRef.current){
+         const editor = editorRef.current as  any
+
+         editor.setContent("")
+       }
+     } catch (error) {
+      
+     }finally{
+        setIsSubmiting(false);
+     }
+  };
 
   return (
     <div>
