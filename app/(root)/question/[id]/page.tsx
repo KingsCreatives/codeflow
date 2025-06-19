@@ -9,6 +9,7 @@ import Tag from "@/components/shared/Tag";
 import Answer from "@/components/forms/Answer";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db/client";
+import AllAnswers from "@/components/shared/AllAnswers";
 
 interface PageProps {
   params: { id: string };
@@ -17,7 +18,7 @@ interface PageProps {
 
 const page = async ({ params, searchParams }: PageProps) => {
   const result = await getQuestionById({
-    questionId:params.id,
+    questionId: params.id,
   });
 
   const { userId } = await auth();
@@ -27,6 +28,8 @@ const page = async ({ params, searchParams }: PageProps) => {
       clerkId: userId ?? undefined,
     },
   });
+
+
 
   return (
     <>
@@ -103,8 +106,15 @@ const page = async ({ params, searchParams }: PageProps) => {
           )}
         </div>
       </div>
+
+      <AllAnswers
+        questionId={result.question?.id ?? ""}
+        authorId={user?.id ?? ""}
+        totalAnswers={result.question?.answers.length || 0}
+      />
+
       <Answer
-        authorId={JSON.stringify(user?.id)}
+        authorId={user?.id ?? ""}
         question={result.question?.content ?? ""}
         questionId={result.question?.id ?? ""}
       />

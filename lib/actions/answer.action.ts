@@ -1,6 +1,6 @@
 "use server";
 
-import { CreateAnswerParams } from "../shared.types";
+import { CreateAnswerParams, GetAnswersParams } from "../shared.types";
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
@@ -41,5 +41,30 @@ export async function createAnswer(params: CreateAnswerParams) {
       answer: null,
       error: error instanceof Error ? error.message : String(error),
     };
+  }
+}
+
+export async function getAllAnswers(params: GetAnswersParams){
+  try {
+    await connectDatabase();
+    const { questionId } = params;
+    const answers = await prisma.answer.findMany({
+      where: { questionId: questionId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            picture: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return { answers };
+  } catch (error) {
+    console.error("Error fetching answers:", error);
   }
 }

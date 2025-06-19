@@ -45,20 +45,20 @@ export default async function Home() {
           fetchedQuestions.map((question) => (
             <QuestionCard
               key={question.id}
-              _id={question.id}
+              id={question.id}
               title={question.title}
               tags={question.tags.map((tag) => ({
-                _id: tag.id,
+                id: tag.id,
                 name: tag.name,
               }))}
-              upvotes={formatNumber(0)} // placeholder for now
+              upvotes={formatNumber(0)} 
               views={formatNumber(question.views)}
               author={{
                 picture: question.author.picture,
-                _id: question.author.id,
+                id: question.author.id,
                 name: question.author.name,
               }}
-              answers={[]} // placeholder for now
+              answerCount={question._count.answers} 
               createdAt={question.createdAt}
             />
           ))

@@ -1,17 +1,20 @@
-"use server"
+"use server";
 
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
-import { CreateQuestionParams, GetQuestionsParams, GetQuestionByIdParams } from "../shared.types";
+import {
+  CreateQuestionParams,
+  GetQuestionsParams,
+  GetQuestionByIdParams,
+} from "../shared.types";
 import { revalidatePath } from "next/cache";
-
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     await connectDatabase();
-    
+
     const questions = await prisma.question.findMany({
-      take: 10, 
+      take: 10,
       include: {
         tags: {
           select: {
@@ -27,9 +30,14 @@ export async function getQuestions(params: GetQuestionsParams) {
             picture: true,
           },
         },
+        _count: {
+          select: {
+            answers: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: "desc", 
+        createdAt: "desc",
       },
     });
 
@@ -42,7 +50,6 @@ export async function getQuestions(params: GetQuestionsParams) {
     };
   }
 }
-
 
 export async function createQuestion(params: CreateQuestionParams) {
   try {
@@ -80,7 +87,7 @@ export async function createQuestion(params: CreateQuestionParams) {
         content,
         author: { connect: { id: author } },
         tags: { connect: tagDocuments },
-      }
+      },
       // include: {
       //   tags: true,
       //   author: {
@@ -96,7 +103,6 @@ export async function createQuestion(params: CreateQuestionParams) {
 
     revalidatePath(path);
     return { question };
-
   } catch (error) {
     throw error;
   }
