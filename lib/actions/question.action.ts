@@ -123,12 +123,15 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
             name: true,
           },
         },
+        upvotes: true,
+        downvotes: true,
         author: {
           select: {
             id: true,
             clerkId: true,
             name: true,
             picture: true,
+            savedQuestions: true
           },
         },
         answers: {

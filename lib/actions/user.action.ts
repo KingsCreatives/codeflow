@@ -1,15 +1,15 @@
-"use server";
+'use server';
 
-import { connectDatabase } from "../db/dbcheck";
-import { prisma } from "@/lib/db/client";
+import { connectDatabase } from '../db/dbcheck';
+import { prisma } from '@/lib/db/client';
 import {
   CreateUserParams,
   DeleteUserParams,
   GetAllUsersParams,
   UpdateUserParams,
-} from "../shared.types";
-import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+} from '../shared.types';
+import { revalidatePath } from 'next/cache';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function getUserById(params: any) {
   try {
@@ -52,7 +52,7 @@ export async function updateUser(params: UpdateUserParams) {
       },
     });
     revalidatePath(path);
-    return updateUser
+    return updateUser;
   } catch (error) {
     console.log(error);
   }
@@ -70,7 +70,7 @@ export async function deleteUser(params: DeleteUserParams) {
     });
 
     if (!userToDelete) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     // Find all questions created by the userToDelete
@@ -78,7 +78,7 @@ export async function deleteUser(params: DeleteUserParams) {
       where: {
         authorId: userToDelete?.id,
       },
-      distinct: ["id"],
+      distinct: ['id'],
     });
 
     // Delete all questions created by the userToDelete
@@ -100,14 +100,14 @@ export async function deleteUser(params: DeleteUserParams) {
   }
 }
 
-export async function getAllUsers(params: GetAllUsersParams){
+export async function getAllUsers(params: GetAllUsersParams) {
   try {
-    await connectDatabase()
-    const {page =1, pageSize = 20, filter , searchQuery} = params
+    await connectDatabase();
+    const { page = 1, pageSize = 20, filter, searchQuery } = params;
 
-    const users = await prisma.user.findMany({})
-    return {users}
+    const users = await prisma.user.findMany({});
+    return { users };
   } catch (error) {
-    console.log(error) 
+    console.log(error);
   }
 }
