@@ -6,8 +6,10 @@ import {
   CreateQuestionParams,
   GetQuestionsParams,
   GetQuestionByIdParams,
+  QuestionVoteParams,
 } from "../shared.types";
 import { revalidatePath } from "next/cache";
+import { disconnect } from "process";
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
@@ -153,3 +155,114 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
     };
   }
 }
+
+export async function upvoteQuestion(params: QuestionVoteParams) {
+  try {
+    await connectDatabase();
+
+    const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+
+    let data = {};
+
+    if (hasupVoted) {
+      // User has upvoted → remove the upvote
+      data = {
+        upvotes: {
+          disconnect: { id: userId },
+        },
+      };
+    } else if (hasdownVoted) {
+      // User had downvoted → remove downvote and add upvote
+      data = {
+        downvotes: {
+          disconnect: { id: userId },
+        },
+        upvotes: {
+          connect: { id: userId },
+        },
+      };
+    } else {
+      // User hasn't voted → add upvote
+      data = {
+        upvotes: {
+          connect: { id: userId },
+        },
+      };
+    }
+
+    const question = await prisma.question.update({
+      where: { id: questionId },
+      data,
+      include: {
+        upvotes: true,
+        downvotes: true,
+      },
+    });
+
+    if (!question) {
+      throw new Error('Question not found');
+    }
+
+    revalidatePath(path);
+    return question;
+  } catch (error) {
+    console.error('Error in upvoteQuestion:', error);
+    throw error;
+  }
+}
+
+export async function downvoteQuestion(params: QuestionVoteParams) {
+  try {
+    await connectDatabase();
+
+    const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+
+    let data = {};
+
+    if (hasdownVoted) {
+      //  User has already downvoted → remove the downvote
+      data = {
+        downvotes: {
+          disconnect: { id: userId },
+        },
+      };
+    } else if (hasupVoted) {
+      // User had upvoted → remove upvote, add downvote
+      data = {
+        upvotes: {
+          disconnect: { id: userId },
+        },
+        downvotes: {
+          connect: { id: userId },
+        },
+      };
+    } else {
+      //  User hasn't voted → just add a downvote
+      data = {
+        downvotes: {
+          connect: { id: userId },
+        },
+      };
+    }
+
+    const question = await prisma.question.update({
+      where: { id: questionId },
+      data,
+      include: {
+        upvotes: true,
+        downvotes: true,
+      },
+    });
+
+    if (!question) {
+      throw new Error('Question not found');
+    }
+
+    revalidatePath(path);
+    return question;
+  } catch (error) {
+    console.error('Error in downvoteQuestion:', error);
+    throw error;
+  }
+}
+
