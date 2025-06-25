@@ -9,7 +9,7 @@ import {
   QuestionVoteParams,
 } from "../shared.types";
 import { revalidatePath } from "next/cache";
-import { disconnect } from "process";
+
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {

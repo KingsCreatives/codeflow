@@ -11,7 +11,6 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/db/client';
 import AllAnswers from '@/components/shared/AllAnswers';
 import Votes from '@/components/shared/Votes';
-import { id } from 'zod/v4/locales';
 
 interface PageProps {
   params: { id: string };
@@ -34,9 +33,7 @@ const page = async ({ params, searchParams }: PageProps) => {
     },
   });
 
-  console.log(user);
-
-  return (
+   return (
     <>
       <div>
         <div className='flex-start w-full flex-col'>
@@ -61,7 +58,7 @@ const page = async ({ params, searchParams }: PageProps) => {
 
             <div className='flex justify-end'>
               <Votes
-                type='question'
+                type='Question'
                 itemId={result.question?.id ?? ''}
                 userId={user?.id ?? ''}
                 upvotes={result.question?.upvotes?.length ?? 0}
