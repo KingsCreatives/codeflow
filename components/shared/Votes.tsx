@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { downvoteQuestion, upvoteQuestion } from '@/lib/actions/question.action';
+import { upvoteAnswer, downvoteAnswer } from '@/lib/actions/answer.action';
 
 interface VoteProps {
   type: string;
@@ -35,8 +36,8 @@ const Votes = ({
     }
 
     if (action === 'upvote') {
+      
       if (type === 'Question') {
-        // console.log("voting on question")
         await upvoteQuestion({
           questionId: itemId,
           userId,
@@ -45,20 +46,22 @@ const Votes = ({
           path: pathname,
         });
       }else if (type === "Answer"){
-        // await upvoteAnswer({
-        //   questionId: JSON.parse(itemId),
-        //   userId,
-        //   hasupVoted,
-        //   hasdownVoted,
-        //   path: pathname,
-        // });
+        console.log('upvoting an answer');
+
+        await upvoteAnswer({
+          answerId: itemId,
+          userId,
+          hasupVoted,
+          hasdownVoted,
+          path: pathname,
+        });
       }
       return
     }
 
     if (action === 'downvote') {
       if (type === 'Question') {
-        console.log("downvoting a question")
+        
         await downvoteQuestion({
           questionId:itemId,
           userId,
@@ -67,13 +70,14 @@ const Votes = ({
           path: pathname,
         });
       }else if (type === "Answer"){
-        // await downvoteAnswer({
-        //   questionId: JSON.parse(itemId),
-        //   userId,
-        //   hasupVoted,
-        //   hasdownVoted,
-        //   path: pathname,
-        // });
+        console.log('downvoting a answer');
+        await downvoteAnswer({
+          answerId:itemId,
+          userId,
+          hasupVoted,
+          hasdownVoted,
+          path: pathname,
+        });
       }
       return
     }
@@ -94,7 +98,9 @@ const Votes = ({
             height={18}
             width={18}
             className='cursor-pointer'
-            onClick={() => {hadleVote("upvote")}}
+            onClick={() => {
+              hadleVote('upvote');
+            }}
             alt='upvote'
           />
           <div className='flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1'>
@@ -111,7 +117,9 @@ const Votes = ({
             height={18}
             width={18}
             className='cursor-pointer'
-            onClick={() => {hadleVote("downvote")}}
+            onClick={() => {
+              hadleVote('downvote');
+            }}
             alt='downvote'
           />
           <div className='flex-center background-light700_dark400 min-w-[18px] rounded-sm p-1'>
@@ -119,18 +127,20 @@ const Votes = ({
           </div>
         </div>
       </div>
-      <Image
-        src={
-          hasSaved
-            ? '/assets/icons/star-filled.svg'
-            : '/assets/icons/star-red.svg'
-        }
-        height={18}
-        width={18}
-        className='cursor-pointer'
-        onClick={() => {}}
-        alt='saved'
-      />
+      {type === 'Question' && (
+        <Image
+          src={
+            hasSaved
+              ? '/assets/icons/star-filled.svg'
+              : '/assets/icons/star-red.svg'
+          }
+          height={18}
+          width={18}
+          className='cursor-pointer'
+          onClick={() => {}}
+          alt='saved'
+        />
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use server";
 
-import { CreateAnswerParams, GetAnswersParams } from "../shared.types";
+import { AnswerVoteParams, CreateAnswerParams, GetAnswersParams } from "../shared.types";
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
@@ -58,6 +58,8 @@ export async function getAllAnswers(params: GetAnswersParams){
             picture: true,
           },
         },
+        upvotes: true,
+        downvotes: true
       },
       orderBy: {
         createdAt: "desc",
@@ -66,5 +68,107 @@ export async function getAllAnswers(params: GetAnswersParams){
     return { answers };
   } catch (error) {
     console.error("Error fetching answers:", error);
+  }
+}
+
+export async function upvoteAnswer(params: AnswerVoteParams){
+  try {
+    await connectDatabase()
+    const {answerId, userId, hasdownVoted, hasupVoted, path} = params
+    let data = {};
+
+    if (hasupVoted) {
+      
+      data = {
+        upvotes: {
+          disconnect: { id: userId },
+        },
+      };
+    } else if (hasdownVoted) {
+      
+      data = {
+        downvotes: {
+          disconnect: { id: userId },
+        },
+        upvotes: {
+          connect: { id: userId },
+        },
+      };
+    } else {
+      data = {
+        upvotes: {
+          connect: { id: userId },
+        },
+      };
+    }
+    
+      const answer = await prisma.answer.update({
+          where: { id: answerId },
+          data,
+          include: {
+            upvotes: true,
+            downvotes: true,
+          },
+        });
+    
+        if (!answer) {
+          throw new Error('Answer not found');
+        }
+    
+        revalidatePath(path);
+  } catch (error) {
+    
+  }
+}
+
+export async function downvoteAnswer(params: AnswerVoteParams) {
+  try {
+    await connectDatabase();
+
+    const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
+
+    let data = {};
+
+    if (hasdownVoted) {
+      data = {
+        downvotes: {
+          disconnect: { id: userId },
+        },
+      };
+    } else if (hasupVoted) {
+      data = {
+        upvotes: {
+          disconnect: { id: userId },
+        },
+        downvotes: {
+          connect: { id: userId },
+        },
+      };
+    } else {
+      
+      data = {
+        downvotes: {
+          connect: { id: userId },
+        },
+      };
+    }
+
+    const answer = await prisma.answer.update({
+      where: { id: answerId },
+      data,
+      include: {
+        upvotes: true,
+        downvotes: true,
+      },
+    });
+
+    if (!answer) {
+      throw new Error('Answer not found');
+    }
+
+    revalidatePath(path);
+  } catch (error) {
+    console.error('Error in downvoteAnswer:', error);
+    throw error;
   }
 }
