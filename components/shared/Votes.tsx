@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { downvoteQuestion, upvoteQuestion } from '@/lib/actions/question.action';
 import { upvoteAnswer, downvoteAnswer } from '@/lib/actions/answer.action';
+import { saveQuestion } from '@/lib/actions/user.action';
 
 interface VoteProps {
   type: string;
@@ -85,6 +86,14 @@ const Votes = ({
     
   };
 
+  const handleSave = async() => {
+       await saveQuestion({
+         questionId: itemId,
+         userId,
+         path: pathname,
+       });
+  }
+
   return (
     <div className='flex gap-5'>
       <div className='flex-center gap-2 5'>
@@ -137,7 +146,7 @@ const Votes = ({
           height={18}
           width={18}
           className='cursor-pointer'
-          onClick={() => {}}
+          onClick={handleSave}
           alt='saved'
         />
       )}

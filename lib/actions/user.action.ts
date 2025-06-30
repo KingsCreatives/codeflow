@@ -6,10 +6,12 @@ import {
   CreateUserParams,
   DeleteUserParams,
   GetAllUsersParams,
+  ToggleSaveQuestionParams,
   UpdateUserParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
+import { disconnect } from 'process';
 
 export async function getUserById(params: any) {
   try {
@@ -109,5 +111,50 @@ export async function getAllUsers(params: GetAllUsersParams) {
     return { users };
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function saveQuestion(params: ToggleSaveQuestionParams) {
+  try {
+    await connectDatabase();
+    const { userId, questionId, path } = params;
+
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        savedQuestions: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error('No user found');
+    }
+
+    const isQuestionSaved = user.savedQuestions.some(
+      (u) => u.id === questionId
+    );
+
+    const data = {
+      savedQuestions: isQuestionSaved
+        ? {
+            disconnect: { id: questionId },
+          }
+        : {
+            connect: { id: questionId },
+          },
+    };
+
+    await prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
+    revalidatePath(path)
+  } catch (error) {
+    console.error('Error in saveQuestion:', error);
+    throw error;
   }
 }
