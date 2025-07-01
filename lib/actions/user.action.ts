@@ -6,12 +6,12 @@ import {
   CreateUserParams,
   DeleteUserParams,
   GetAllUsersParams,
+  GetSavedQuestionsParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
-import { NextRequest, NextResponse } from 'next/server';
-import { disconnect } from 'process';
+import { QuestionWithDetails, SavedQuestionsResponse } from '../shared.types';
 
 export async function getUserById(params: any) {
   try {
@@ -119,7 +119,6 @@ export async function saveQuestion(params: ToggleSaveQuestionParams) {
     await connectDatabase();
     const { userId, questionId, path } = params;
 
-
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -152,9 +151,87 @@ export async function saveQuestion(params: ToggleSaveQuestionParams) {
       data,
     });
 
-    revalidatePath(path)
+    revalidatePath(path);
   } catch (error) {
     console.error('Error in saveQuestion:', error);
     throw error;
+  }
+}
+
+export async function getAllSavedQuestions(
+  params: GetSavedQuestionsParams
+): Promise<SavedQuestionsResponse> {
+  try {
+    const { clerkId, searchQuery, page = 1, pageSize = 10 } = params;
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const searchFilter = searchQuery
+      ? {
+          title: {
+            contains: searchQuery,
+            mode: 'insensitive' as const,
+          },
+        }
+      : {};
+
+    const savedQuestions: QuestionWithDetails[] =
+      await prisma.question.findMany({
+        where: {
+          savedBy: {
+            some: { id: user.id },
+          },
+          ...searchFilter,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          tags: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          author: {
+            select: {
+              id: true,
+              name: true,
+              picture: true,
+              clerkId: true,
+            },
+          },
+
+          _count: {
+            select: {
+              answers: true,
+            },
+          },
+        },
+      });
+
+    const totalCount = await prisma.question.count({
+      where: {
+        savedBy: {
+          some: { id: user.id },
+        },
+        ...searchFilter,
+      },
+    });
+
+    return {
+      savedQuestions,
+      totalCount,
+    };
+  } catch (error) {
+    console.error('Error in getAllSavedQuestions:', error);
+    return { savedQuestions: [], totalCount: 0 };
   }
 }

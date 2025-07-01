@@ -1,155 +1,181 @@
+import { Prisma } from '@prisma/client';
+
+// Prisma type for question with tags, author, and answers count
+const questionWithDetails = Prisma.validator<Prisma.QuestionDefaultArgs>()({
+  include: {
+    tags: {
+      select: { id: true, name: true },
+    },
+    author: {
+      select: { id: true, name: true, picture: true, clerkId: true },
+    },
+    _count: {
+      select: { answers: true },
+    },
+  },
+});
+
+export type QuestionWithDetails = Prisma.QuestionGetPayload<
+  typeof questionWithDetails
+>;
+
+export interface SavedQuestionsResponse {
+  savedQuestions: QuestionWithDetails[];
+  totalCount?: number;
+}
+
 export interface CreateAnswerParams {
-   content: string;
-   author: string; // User ID
-   question: string; // Question ID
-   path: string;
+  content: string;
+  author: string;
+  question: string;
+  path: string;
 }
 
 export interface GetAnswersParams {
-   questionId: string;
-   sortBy?: string;
-   page?: number;
-   pageSize?: number;
+  questionId: string;
+  sortBy?: string;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface AnswerVoteParams {
-   answerId: string;
-   userId: string;
-   hasupVoted: boolean;
-   hasdownVoted: boolean;
-   path: string;
+  answerId: string;
+  userId: string;
+  hasupVoted: boolean;
+  hasdownVoted: boolean;
+  path: string;
 }
 
 export interface DeleteAnswerParams {
-   answerId: string;
-   path: string;
+  answerId: string;
+  path: string;
 }
 
 export interface SearchParams {
-   query?: string | null;
-   type?: string | null;
+  query?: string | null;
+  type?: string | null;
 }
 
 export interface RecommendedParams {
-   userId: string;
-   page?: number;
-   pageSize?: number;
-   searchQuery?: string;
+  userId: string;
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
 }
 
 export interface ViewQuestionParams {
-   questionId: string;
-   userId: string | undefined;
+  questionId: string;
+  userId: string | undefined;
 }
 
 export interface JobFilterParams {
-   query: string;
-   page: string;
+  query: string;
+  page: string;
 }
 
 export interface GetQuestionsParams {
-   page?: number;
-   pageSize?: number;
-   searchQuery?: string;
-   filter?: string;
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
+  filter?: string;
 }
 
 export interface CreateQuestionParams {
-   title: string;
-   content: string;
-   tags: string[];
-   author: string;
-   path: string;
+  title: string;
+  content: string;
+  tags: string[];
+  author: string;
+  path: string;
 }
 
 export interface GetQuestionByIdParams {
-   questionId: string;
+  questionId: string;
 }
 
 export interface QuestionVoteParams {
-   questionId: string;
-   userId: string;
-   hasupVoted: boolean;
-   hasdownVoted: boolean;
-   path: string;
+  questionId: string;
+  userId: string;
+  hasupVoted: boolean;
+  hasdownVoted: boolean;
+  path: string;
 }
 
 export interface DeleteQuestionParams {
-   questionId: string;
-   path: string;
+  questionId: string;
+  path: string;
 }
 
 export interface EditQuestionParams {
-   questionId: string;
-   title: string;
-   content: string;
-   path: string;
+  questionId: string;
+  title: string;
+  content: string;
+  path: string;
 }
 
 export interface GetAllTagsParams {
-   page?: number;
-   pageSize?: number;
-   filter?: string;
-   searchQuery?: string;
+  page?: number;
+  pageSize?: number;
+  filter?: string;
+  searchQuery?: string;
 }
 
 export interface GetQuestionsByTagIdParams {
-   tagId: string;
-   page?: number;
-   pageSize?: number;
-   searchQuery?: string;
+  tagId: string;
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
 }
 
 export interface GetTopInteractedTagsParams {
-   userId: string;
-   limit?: number;
+  userId: string;
+  limit?: number;
 }
 
 export interface CreateUserParams {
-   clerkId: string;
-   name: string;
-   username: string;
-   email: string;
-   picture: string;
+  clerkId: string;
+  name: string;
+  username: string;
+  email: string;
+  picture: string;
 }
 
 export interface GetUserByIdParams {
-   userId: string;
+  userId: string;
 }
 
 export interface GetAllUsersParams {
-   page?: number;
-   pageSize?: number;
-   filter?: string;
-   searchQuery?: string;
+  page?: number;
+  pageSize?: number;
+  filter?: string;
+  searchQuery?: string;
 }
 
 export interface UpdateUserParams {
-   clerkId: string;
-   updateData: Partial<IUser>;
-   path: string;
+  clerkId: string;
+  updateData: Partial<any>; // Use actual User interface if available
+  path: string;
 }
 
 export interface ToggleSaveQuestionParams {
-   userId: string;
-   questionId: string;
-   path: string;
+  userId: string;
+  questionId: string;
+  path: string;
 }
 
 export interface GetSavedQuestionsParams {
-   clerkId: string;
-   page?: number;
-   pageSize?: number;
-   filter?: string;
-   searchQuery?: string;
+  clerkId: string;
+  page?: number;
+  pageSize?: number;
+  filter?: string;
+  searchQuery?: string;
 }
 
 export interface GetUserStatsParams {
-   userId: string;
-   page?: number;
-   pageSize?: number;
+  userId: string;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface DeleteUserParams {
-   clerkId: string;
+  clerkId: string;
 }
