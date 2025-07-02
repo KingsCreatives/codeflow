@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { downvoteQuestion, upvoteQuestion } from '@/lib/actions/question.action';
 import { upvoteAnswer, downvoteAnswer } from '@/lib/actions/answer.action';
 import { saveQuestion } from '@/lib/actions/user.action';
+import { trackQuestionViews } from '@/lib/actions/interaction.action';
+
 
 interface VoteProps {
   type: string;
@@ -93,6 +95,13 @@ const Votes = ({
          path: pathname,
        });
   }
+
+useEffect(() => {
+  trackQuestionViews({
+    userId,
+    questionId: itemId,
+  })
+}, [pathname, userId, itemId, router]);
 
   return (
     <div className='flex gap-5'>

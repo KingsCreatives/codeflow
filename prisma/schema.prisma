@@ -31,6 +31,8 @@ model User {
   downvotedAnswers Answer[]   @relation("AnswerDownvotes")
   followedTags     Tag[]      @relation("TagFollowers")
   answers          Answer[]   @relation("UserAnswers")
+
+  Interaction Interaction[]
 }
 
 model Question {
@@ -48,6 +50,8 @@ model Question {
   authorId    String
   savedBy     User[]     @relation("SavedQuestions")
   answers     Answer[]   @relation("QuestionToAnswers")
+
+  Interaction Interaction[]
 }
 
 model Tag {
@@ -58,10 +62,13 @@ model Tag {
   // Relations
   questions   Question[] @relation("QuestionTags")
   followers   User[]     @relation("TagFollowers")
+
+  Interaction Interaction[] @relation("InteractionTags")
 }
 model Answer {
   id          String     @id @default(uuid())
   content     String
+  views       Int        @default(0)
   createdAt   DateTime   @default(now())
 
   // Relations
@@ -71,4 +78,28 @@ model Answer {
   authorId    String
   upvotes     User[]     @relation("AnswerUpvotes")
   downvotes   User[]     @relation("AnswerDownvotes")
+
+  Interaction Interaction[]
 } 
+
+model Interaction {
+  id        String   @id @default(uuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  action    String
+
+  questionId String? 
+  question   Question? @relation(fields: [questionId], references: [id])
+
+  answerId   String?
+  answer     Answer?   @relation(fields: [answerId], references: [id])
+
+  tags      Tag[]     @relation("InteractionTags")
+
+  createdAt DateTime  @default(now())
+}
+
+
+
