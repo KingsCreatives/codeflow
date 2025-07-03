@@ -2,7 +2,7 @@
 
 import { prisma } from "../db/client";
 import { connectDatabase } from "../db/dbcheck";
-import { GetAllTagsParams, GetTopInteractedTagsParams } from "../shared.types";
+import { GetAllTagsParams, GetTopInteractedTagsParams,GetQuestionsByTagIdParams , QuestionWithDetails} from "../shared.types";
 import { getUserById } from "./user.action";
 
 export async function getUserFrequentTags(params: GetTopInteractedTagsParams) {
@@ -49,5 +49,81 @@ export async function getAllTags(params: GetAllTagsParams) {
   } catch (error) {
     console.log(error);
     return { tags: [] };
+  }
+}
+
+
+export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
+  try {
+    await connectDatabase();
+    const { tagId, page = 1, pageSize = 10, searchQuery } = params;
+
+     const searchFilter = searchQuery
+          ? {
+              title: {
+                contains: searchQuery,
+                mode: 'insensitive' as const,
+              },
+            }
+          : {};
+    
+        const savedQuestions: QuestionWithDetails[] =
+          await prisma.question.findMany({
+            where: {
+              tags: {
+                some: { id: tagId },
+              },
+              ...searchFilter,
+            },
+            orderBy: { createdAt: 'desc' },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            include: {
+              tags: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              author: {
+                select: {
+                  id: true,
+                  name: true,
+                  picture: true,
+                  clerkId: true,
+                },
+              },
+    
+              _count: {
+                select: {
+                  answers: true,
+                },
+              },
+            },
+          });
+    
+        const totalCount = await prisma.question.count({
+          where: {
+            tags: {
+              some: { id: tagId },
+            },
+            ...searchFilter,
+          },
+        });
+
+        const tagName = await prisma.tag.findUnique({
+          where: { id: tagId },
+          select: { name: true },
+        })
+    
+        return {
+          savedQuestions,
+          totalCount,
+          tagName: tagName ? tagName.name : "Unknown Tag",
+        };
+
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to fetch questions by tag ID");
   }
 }
