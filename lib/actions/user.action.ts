@@ -7,6 +7,7 @@ import {
   DeleteUserParams,
   GetAllUsersParams,
   GetSavedQuestionsParams,
+  GetUserByIdParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
 } from '../shared.types';
@@ -233,5 +234,43 @@ export async function getAllSavedQuestions(
   } catch (error) {
     console.error('Error in getAllSavedQuestions:', error);
     return { savedQuestions: [], totalCount: 0 };
+  }
+}
+
+export async function getUserInfo(params:GetUserByIdParams) {
+  try {
+    await connectDatabase();
+    const { userId } = params;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },})
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const totalQuestions = await prisma.question.count({
+        where: {
+          authorId: user.id,
+        }
+      })
+
+      const totalAnswers = await prisma.answer.count({
+        where: {
+          authorId: user.id,
+        }
+      })
+
+      return {
+        ...user,
+        totalQuestions,
+        totalAnswers,
+      };
+
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+    throw error;
   }
 }
