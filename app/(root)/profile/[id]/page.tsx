@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getJoinedDate } from '@/lib/utils';
 import ProfileLink from '@/components/shared/ProfileLink';
+import UserStats from '@/components/shared/UserStats';
 
 const Page = async ({ params, searchParams }: URLProps) => {
   const userInfo = await getUserInfo({ userId: params.id });
@@ -65,7 +66,7 @@ const Page = async ({ params, searchParams }: URLProps) => {
           </SignedIn>
         </div>
       </div>
-      Stats
+      <UserStats totalQuestions={userInfo.totalQuestions} totalAnswers={userInfo.totalAnswers}/>
       <div className='mt-10 flex gap-10'>
         <Tabs defaultValue='top-posts' className='flex-1'>
           <TabsList className='background-light800_dark400'>
