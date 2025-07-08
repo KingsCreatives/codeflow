@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getJoinedDate } from '@/lib/utils';
 import ProfileLink from '@/components/shared/ProfileLink';
 import UserStats from '@/components/shared/UserStats';
+import UserQuestionsTab from '@/components/shared/UserQuestionsTab';
+import UserAnswersTab from '@/components/shared/UserAnswersTab';
 
 const Page = async ({ params, searchParams }: URLProps) => {
   const userInfo = await getUserInfo({ userId: params.id });
@@ -50,7 +52,9 @@ const Page = async ({ params, searchParams }: URLProps) => {
                 imageUrl='/assets/icons/calendar.svg'
                 title={getJoinedDate(userInfo.joinedAt)}
               />
-              <p className='paragraph-regular text-dark400_light800 mt-8'>{userInfo?.bio}</p>
+              <p className='paragraph-regular text-dark400_light800 mt-8'>
+                {userInfo?.bio}
+              </p>
             </div>
           </div>
         </div>
@@ -66,19 +70,30 @@ const Page = async ({ params, searchParams }: URLProps) => {
           </SignedIn>
         </div>
       </div>
-      <UserStats totalQuestions={userInfo.totalQuestions} totalAnswers={userInfo.totalAnswers}/>
-      <div className='mt-10 flex gap-10'>
+      <UserStats
+        totalQuestions={userInfo.totalQuestions}
+        totalAnswers={userInfo.totalAnswers}
+      />
+      <div className='mt-5 flex'>
         <Tabs defaultValue='top-posts' className='flex-1'>
-          <TabsList className='background-light800_dark400'>
+          <TabsList className='background-light800_dark400 gap-2.5 mb-2.5 cursor-pointer'>
             <TabsTrigger value='top-posts' className='tab'>
-              Top post
+              Top Questions
             </TabsTrigger>
             <TabsTrigger value='answers' className='tab'>
-              Answers
+              Top Answers
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='top-posts'>POST</TabsContent>
-          <TabsContent value='answers'>ANSWERS</TabsContent>
+          <TabsContent value='top-posts'>
+            <UserQuestionsTab
+              userId={userInfo.id}
+              clerkId={userInfo.clerkId}
+              searchParams={searchParams}
+            />
+          </TabsContent>
+          <TabsContent value='answers'>
+            <UserAnswersTab />
+          </TabsContent>
         </Tabs>
       </div>
     </>

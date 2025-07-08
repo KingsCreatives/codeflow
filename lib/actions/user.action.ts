@@ -8,6 +8,7 @@ import {
   GetAllUsersParams,
   GetSavedQuestionsParams,
   GetUserByIdParams,
+  GetUserStatsParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
 } from '../shared.types';
@@ -237,7 +238,7 @@ export async function getAllSavedQuestions(
   }
 }
 
-export async function getUserInfo(params:GetUserByIdParams) {
+export async function getUserInfo(params: GetUserStatsParams) {
   try {
     await connectDatabase();
     const { userId } = params;
@@ -245,32 +246,82 @@ export async function getUserInfo(params:GetUserByIdParams) {
     const user = await prisma.user.findUnique({
       where: {
         clerkId: userId,
-      },})
+      },
+    });
 
-      if (!user) {
-        throw new Error('User not found');
-      }
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      const totalQuestions = await prisma.question.count({
-        where: {
-          authorId: user.id,
-        }
-      })
+    const totalQuestions = await prisma.question.count({
+      where: {
+        authorId: user.id,
+      },
+    });
 
-      const totalAnswers = await prisma.answer.count({
-        where: {
-          authorId: user.id,
-        }
-      })
+    const totalAnswers = await prisma.answer.count({
+      where: {
+        authorId: user.id,
+      },
+    });
 
-      return {
-        ...user,
-        totalQuestions,
-        totalAnswers,
-      };
-
+    return {
+      ...user,
+      totalQuestions,
+      totalAnswers,
+    };
   } catch (error) {
     console.error('Error fetching user info:', error);
+    throw error;
+  }
+}
+
+export async function getAllUserQuestions(params: GetUserStatsParams) {
+  try {
+    await connectDatabase();
+    const { userId, page=1, pageSize=10} = params;
+
+    const totalQuestions = await prisma.question.count({
+      where: {
+        author: { id: userId },
+      },
+    });
+
+    const userQuestions = await prisma.question.findMany({
+      where: {
+        author: { id: userId },
+      },
+      include: {
+        tags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        author: {
+          select: {
+            id: true,
+            clerkId: true,
+            name: true,
+            picture: true,
+          },
+        },
+        _count: {
+          select: {
+            answers: true,
+          },
+        },
+      },
+    });
+
+    return {
+      questions: userQuestions,
+      totalQuestions,
+    };
+    
+  } catch (error) {
+    console.error('Error fetching user questions:', error);
     throw error;
   }
 }

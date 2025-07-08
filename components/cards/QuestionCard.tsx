@@ -7,6 +7,7 @@ import { getTimeStamp } from "@/lib/utils";
 interface QuestionProps {
   id: string;
   title: string;
+  clerkId?: string;
   tags: { id: string; name: string }[];
   author: { id: string; name: string; picture: string };
   answerCount: number;
@@ -17,6 +18,7 @@ interface QuestionProps {
 
 const QuestionCard = ({
   id,
+  clerkId,
   title,
   tags,
   views,
