@@ -14,6 +14,7 @@ import {
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
 import { QuestionWithDetails, SavedQuestionsResponse } from '../shared.types';
+import { sortByUpvotesAndViews } from '../utils';
 
 export async function getUserById(params: any) {
   try {
@@ -310,18 +311,68 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
         _count: {
           select: {
             answers: true,
+            upvotes: true
           },
         },
       },
     });
 
+    const sortedQuestions = sortByUpvotesAndViews(userQuestions);
+
     return {
-      questions: userQuestions,
+      questions: sortedQuestions,
       totalQuestions,
     };
     
   } catch (error) {
     console.error('Error fetching user questions:', error);
+    throw error;
+  }
+}
+
+
+export async function getAllUserAnswers(params: GetUserStatsParams) {
+  try {
+    await connectDatabase();
+    const { userId, page = 1, pageSize = 10 } = params;
+
+    const totalAnswers = await prisma.answer.count({
+      where: {
+        author: { id: userId },
+      },
+    });
+
+    const userAnswers = await prisma.answer.findMany({
+      where: {
+        author: { id: userId },
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            clerkId: true,
+            name: true,
+            picture: true,
+          },
+        },
+        question: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        upvotes: true,
+      },
+    });
+
+    const sortedAnswer = sortByUpvotesAndViews(userAnswers)
+
+    return {
+      answers: sortedAnswer,
+      totalAnswers,
+    };
+  } catch (error) {
+    console.error('Error fetching user Answers:', error);
     throw error;
   }
 }

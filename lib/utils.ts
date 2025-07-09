@@ -59,3 +59,30 @@ export function getJoinedDate(date: Date): string {
 
   return `${month} ${year}`;
 }
+
+type SortableItem = {
+  _count?: {
+    upvotes?: number;
+  };
+  views?: number;
+  createdAt?: Date;
+};
+
+export function sortByUpvotesAndViews<T extends SortableItem>(items: T[]): T[] {
+  return items.sort((a, b) => {
+    const upvotesA = a._count?.upvotes ?? 0;
+    const upvotesB = b._count?.upvotes ?? 0;
+
+    if (upvotesB !== upvotesA) return upvotesB - upvotesA;
+
+    const viewsA = a.views ?? 0;
+    const viewsB = b.views ?? 0;
+
+    if (viewsB !== viewsA) return viewsB - viewsA;
+
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+    return dateB - dateA;
+  });
+}
