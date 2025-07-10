@@ -299,7 +299,8 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
             name: true,
           },
         },
-
+        upvotes: { select: { id: true } }, 
+        downvotes: { select: { id: true } }, 
         author: {
           select: {
             id: true,
@@ -311,7 +312,7 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
         _count: {
           select: {
             answers: true,
-            upvotes: true
+            upvotes: true,
           },
         },
       },

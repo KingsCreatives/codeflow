@@ -30,8 +30,11 @@ export async function getQuestions(params: GetQuestionsParams) {
             name: true,
             username: true,
             picture: true,
+            clerkId: true,
           },
         },
+        upvotes: { select: { id: true } }, 
+        downvotes: { select: { id: true } },
         _count: {
           select: {
             answers: true,
@@ -39,7 +42,7 @@ export async function getQuestions(params: GetQuestionsParams) {
         },
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 

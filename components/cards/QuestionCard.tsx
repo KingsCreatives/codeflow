@@ -3,20 +3,24 @@ import React from "react";
 import Tag from "../shared/Tag";
 import Metric from "../shared/Metric";
 import { getTimeStamp } from "@/lib/utils";
+import { SignedIn } from "@clerk/nextjs";
+import EditDeleteAction from "../shared/EditDeleteAction";
+import { auth } from "@clerk/nextjs/server";
+import { vi } from "zod/v4/locales";
 
 interface QuestionProps {
   id: string;
   title: string;
   clerkId?: string;
   tags: { id: string; name: string }[];
-  author: { id: string; name: string; picture: string };
+  author: { id: string; name: string; picture: string};
   answerCount: number;
   views: string | number;
-  upvotes: string | number;
+  voteCount: string | number;
   createdAt: Date;
 }
 
-const QuestionCard = ({
+const QuestionCard = async ({
   id,
   clerkId,
   title,
@@ -24,10 +28,12 @@ const QuestionCard = ({
   views,
   author,
   answerCount,
-  upvotes,
+  voteCount,
   createdAt,
 }: QuestionProps) => {
 
+  const {userId} = await auth()
+  const userIsAuthor = clerkId && userId === clerkId
 
   return (
     <div className="card-wrapper p-9 sm:px-11 rounded-[10px] ">
@@ -43,7 +49,11 @@ const QuestionCard = ({
             </h3>
           </Link>
         </div>
-        {/* if signed in add edit delete actions */}
+        <SignedIn>
+          {userIsAuthor && (
+            <EditDeleteAction type="Question" itemId={JSON.stringify(id)}/>
+          )}
+        </SignedIn>
       </div>
       {/* Tags */}
       <div className="mt-3.5 flex flex-wrap gap-2">
@@ -65,9 +75,9 @@ const QuestionCard = ({
 
         <Metric
           imgUrl="/assets/icons/like.svg"
-          alt="upvotes"
-          value={upvotes}
-          title="Votes"
+          alt="Votes"
+          value={voteCount}
+          title={Number(voteCount) < 2 ? "Vote" : "Votes"}
           textStyles="small-medium text-dark400_light800"
           isAuthor={false}
         />
@@ -75,7 +85,7 @@ const QuestionCard = ({
           imgUrl="/assets/icons/message.svg"
           alt="message"
           value={answerCount}
-          title="Answers"
+          title={Number(answerCount) < 2 ? "Answer" : "Answers"}
           textStyles="small-medium text-dark400_light800"
           isAuthor={false}
         />
@@ -83,7 +93,7 @@ const QuestionCard = ({
           imgUrl="/assets/icons/message.svg"
           alt="views"
           value={views}
-          title="Views"
+          title={Number(views) < 2 ? "View" : "Views"}
           textStyles="small-medium text-dark400_light800"
           isAuthor={false}
         />

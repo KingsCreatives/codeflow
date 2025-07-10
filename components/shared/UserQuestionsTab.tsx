@@ -12,7 +12,7 @@ interface UserQuestionsTabProps {
 
 const UserQuestionsTab = async({searchParams, userId, clerkId} : UserQuestionsTabProps) => {
     const result = await getAllUserQuestions({ userId})
-
+     
   return (
     <>
       {result?.questions?.length > 0 &&
@@ -27,7 +27,10 @@ const UserQuestionsTab = async({searchParams, userId, clerkId} : UserQuestionsTa
                 id: tag.id,
                 name: tag.name,
               }))}
-              upvotes={formatNumber(0)}
+              voteCount={formatNumber(
+                (question.upvotes?.length ?? 0) -
+                  (question.downvotes?.length ?? 0)
+              )}
               views={formatNumber(question.views)}
               author={{
                 picture: question.author.picture,
