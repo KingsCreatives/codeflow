@@ -47,7 +47,7 @@ export default async function Home() {
                 id: tag.id,
                 name: tag.name,
               }))}
-              upvotes={formatNumber(0)}
+              voteCount={formatNumber(0)}
               views={formatNumber(question.views)}
               author={{
                 picture: question.author.picture,
