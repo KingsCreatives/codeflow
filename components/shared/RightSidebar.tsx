@@ -4,36 +4,36 @@ import Image from "next/image";
 import Tag from "./Tag";
 const topQuestions = [
   {
-    _id: "1",
+    id: "1",
     title:
       "How to Ensure Unique User Profile with ON CONFLICT in PostgreSQL Using Drizzle ORM?",
   },
   {
-    _id: "2",
+    id: "2",
     title:
       "What are the benefits and trade-offs of using Server-Side Rendering (SSR) in Next.js?",
   },
   {
-    _id: "3",
+    id: "3",
     title: "How to center a div?",
   },
   {
-    _id: "4",
+    id: "4",
     title:
       "Node.js res.json() and res.send(), not working but still able to change status code",
   },
   {
-    _id: "5",
+    id: "5",
     title: "ReactJs or NextJs for begginers i ask for advice",
   },
 ];
 
 const popularTag = [
-  { _id: "1", name: "javascript", totalQuestion: 5 },
-  { _id: "2", name: "java", totalQuestion: 8 },
-  { _id: "3", name: "php", totalQuestion: 2 },
-  { _id: "4", name: "react", totalQuestion: 85 },
-  { _id: "5", name: "rust", totalQuestion: 1 },
+  { id: "1", name: "javascript", totalQuestion: 5 },
+  { id: "2", name: "java", totalQuestion: 8 },
+  { id: "3", name: "php", totalQuestion: 2 },
+  { id: "4", name: "react", totalQuestion: 85 },
+  { id: "5", name: "rust", totalQuestion: 1 },
 ];
 
 const RightSidebar = () => {
@@ -44,8 +44,8 @@ const RightSidebar = () => {
         <div className="mt-7 flex flex-col w-full gap-[30px]">
           {topQuestions.map((question) => (
             <Link
-              href={`/questions/${question._id}`}
-              key={question._id}
+              href={`/questions/${question.id}`}
+              key={question.id}
               className="flex  cursor-pointer items-center justify-between gap-7"
             >
               <p className="body-meduim text-dark500_light700">
@@ -67,8 +67,8 @@ const RightSidebar = () => {
         <div className="mt-7 flex flex-col gap-4">
           {popularTag.map((tag) => (
             <Tag
-              key={tag._id}
-              _id={tag._id}
+              key={tag.id}
+              id={tag.id}
               name={tag.name}
               totalQuestions={tag.totalQuestion}
               showCount
