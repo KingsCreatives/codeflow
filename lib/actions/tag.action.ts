@@ -20,8 +20,8 @@ export async function getUserFrequentTags(params: GetTopInteractedTagsParams) {
     if (!user) throw new Error("User not found");
 
     return [
-      { _id: "1", name: "tag1" },
-      { _id: "2", name: "tag2" },
+      { id: "1", name: "tag1" },
+      { id: "2", name: "tag2" },
     ];
   } catch (error) {
     console.log(error);
