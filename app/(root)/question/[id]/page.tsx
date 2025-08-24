@@ -13,13 +13,14 @@ import AllAnswers from '@/components/shared/AllAnswers';
 import Votes from '@/components/shared/Votes';
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams?: Record<string, string | string[] | undefined>;
 }
 
 const page = async ({ params, searchParams }: PageProps) => {
+  const {id} = await params
   const result = await getQuestionById({
-    questionId: params.id,
+    questionId: id,
   });
 
   const { userId } = await auth();

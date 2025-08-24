@@ -8,11 +8,14 @@ import { URLProps } from '@/types'
 
 const Page =  async ({params, searchParams}: URLProps) => {
 
+  const {id} = await params
+  const resolvedSearchParams = await searchParams
+
     const result = await getQuestionsByTagId({
-      tagId: params.id,
-      page: searchParams.page ? parseInt(searchParams.page as string) : 1,
-      pageSize: searchParams.pageSize ? parseInt(searchParams.pageSize as string) : 10,
-      searchQuery: searchParams.searchQuery as string || '',
+      tagId: id,
+      page: resolvedSearchParams.page ? parseInt(resolvedSearchParams.page as string) : 1,
+      pageSize: resolvedSearchParams.pageSize ? parseInt(resolvedSearchParams.pageSize as string) : 10,
+      searchQuery: resolvedSearchParams.searchQuery as string || '',
     })
 
   const tag = result.tagName[0].toUpperCase() + result.tagName.slice(1) || 'Tag';
@@ -43,7 +46,7 @@ const Page =  async ({params, searchParams}: URLProps) => {
                 id: tag.id,
                 name: tag.name,
               }))}
-              upvotes={formatNumber(0)}
+              voteCount={formatNumber(0)}
               views={formatNumber(question.views)}
               author={{
                 picture: question.author.picture,
