@@ -14,7 +14,7 @@ import Votes from '@/components/shared/Votes';
 
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>; // Add Promise here
 }
 
 const page = async ({ params, searchParams }: PageProps) => {
