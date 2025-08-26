@@ -31,9 +31,12 @@ export async function getUserById(params: any) {
   }
 }
 
-export async function createdUser(data: CreateUserParams) {
+export async function createUser(data: CreateUserParams) {
   try {
     await connectDatabase();
+    if(!data.username){
+    throw new Error("Username is required")
+    }
     const newUser = await prisma.user.create({
       data,
     });
@@ -48,7 +51,7 @@ export async function updateUser(params: UpdateUserParams) {
     await connectDatabase();
     const { clerkId, updateData, path } = params;
 
-    const updatedUser = await prisma.user.update({
+    const userUpdatedData = await prisma.user.update({
       where: {
         clerkId,
       },
@@ -57,7 +60,7 @@ export async function updateUser(params: UpdateUserParams) {
       },
     });
     revalidatePath(path);
-    return updateUser;
+    return userUpdatedData;
   } catch (error) {
     console.log(error);
   }

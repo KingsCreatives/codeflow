@@ -152,7 +152,7 @@ export interface GetAllUsersParams {
 
 export interface UpdateUserParams {
   clerkId: string;
-  updateData: Partial<any>; // Use actual User interface if available
+  updateData: Partial<any>; 
   path: string;
 }
 

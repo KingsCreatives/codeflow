@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 
-import { createdUser, deleteUser, updateUser } from "@/lib/actions/user.action";
+import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
 
 export async function POST(req: NextRequest) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SIGNING_SECRET;
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     const { id, email_addresses, image_url, username, first_name, last_name } = evt.data
       
 
-    const user = await createdUser({
+    const user = await createUser({
       clerkId: id,
       name: `${first_name}${last_name ? ` ${last_name}` : ""}`,
       username: username!,
@@ -77,9 +77,9 @@ export async function POST(req: NextRequest) {
         email: email_addresses[0].email_address,
         picture: image_url,
       },
-      path: `/profile/${id}`,
+      path: `/profile/${id}`
     });
-
+      console.log(user)
     return NextResponse.json(
       { message: "User updated", user },
       { status: 200 }
