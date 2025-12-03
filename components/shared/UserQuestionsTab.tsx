@@ -1,17 +1,16 @@
 import React from 'react'
 import { getAllUserQuestions } from '@/lib/actions/user.action'
 import { formatNumber } from '@/lib/utils'
-import { SearchParams } from '@/lib/shared.types'
 import QuestionCard from '@/components/cards/QuestionCard'
+import { SearchParamsProps } from '@/types'
 
-interface UserQuestionsTabProps {
+interface UserQuestionsTabProps extends SearchParamsProps {
   userId: string;
   clerkId?: string;
-  searchParams?: SearchParams
 }
 
 const UserQuestionsTab = async({searchParams, userId, clerkId} : UserQuestionsTabProps) => {
-    const result = await getAllUserQuestions({ userId})
+    const result = await getAllUserQuestions({ userId, page: 1})
      
   return (
     <>

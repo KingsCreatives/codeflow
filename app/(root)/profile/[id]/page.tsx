@@ -79,12 +79,12 @@ const Page = async ({ params, searchParams }: URLProps) => {
       />
       <div className='mt-5 flex'>
         <Tabs defaultValue='top-posts' className='flex-1'>
-          <TabsList className='background-light800_dark400 gap-2.5 mb-2.5 cursor-pointer'>
+          <TabsList className='background-light800_dark400 gap-2.5 min-h-[42px] p-1 cursor-pointer'>
             <TabsTrigger value='top-posts' className='tab'>
-              Top Questions
+              Top Posts
             </TabsTrigger>
             <TabsTrigger value='answers' className='tab'>
-              Top Answers
+              Answers
             </TabsTrigger>
           </TabsList>
           <TabsContent value='top-posts'>

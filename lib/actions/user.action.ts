@@ -280,7 +280,7 @@ export async function getUserInfo(params: GetUserStatsParams) {
   }
 }
 
-export async function getAllUserQuestions(params: GetUserStatsParams) {
+ export async function getAllUserQuestions(params: GetUserStatsParams) {
   try {
     await connectDatabase();
     const { userId, page=1, pageSize=10} = params;
@@ -288,7 +288,7 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
     const totalQuestions = await prisma.question.count({
       where: {
         author: { id: userId },
-      },
+      }
     });
 
     const userQuestions = await prisma.question.findMany({

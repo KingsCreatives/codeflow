@@ -22,12 +22,12 @@ const ProfileLink = ({ imageUrl, href, title }: ProfileLinkProps) => {
         <Link
           href={href}
           target='_blank'
-          className='paragraph-meium text-blue-500'
+          className='paragraph-medium text-blue-500'
         >
           {title}
         </Link>
       ) : (
-        <p className='paragraph-meduim text-dark400_light700'>{title}</p>
+        <p className='paragraph-medium text-dark400_light700'>{title}</p>
       )}
     </div>
   );
