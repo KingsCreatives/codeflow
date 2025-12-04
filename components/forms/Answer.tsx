@@ -25,6 +25,9 @@ interface AnswerProps{
   questionId: string
 }
 
+const type: any = 'create';
+
+
 const Answer = ({ authorId, question, questionId } : AnswerProps) => {
   const path = usePathname()
   const editorRef = useRef<TinyMCEEditor | null>(null);
@@ -41,21 +44,25 @@ const Answer = ({ authorId, question, questionId } : AnswerProps) => {
   const handleCreateAnswer = async(values: z.infer<typeof AnswerSchema>) => {
      setIsSubmiting(true);
      try {
-       await createAnswer({
+       const result = await createAnswer({
          content: values.answer,
          question: questionId,
-         author: JSON.parse(authorId),
-         path
+         author: authorId,
+         path : path,
        });
+
+       if(result?.error){
+        console.error("Server Error:", result.error)
+        return;
+       }
 
        form.reset()
        if(editorRef.current){
          const editor = editorRef.current as  any
-
          editor.setContent("")
        }
      } catch (error) {
-      
+       console.error("Client Error:", error)
      }finally{
         setIsSubmiting(false);
      }
@@ -143,15 +150,17 @@ const Answer = ({ authorId, question, questionId } : AnswerProps) => {
             )}
           />
 
-          <div className="flex">
-            <Button
-              type="submit"
-              className="primary-gradient w-fit text-white"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Submitting..." : "Submit"}
-            </Button>
-          </div>
+           <Button
+                    type="submit"
+                    className="primary-gradient w-fit text-light-900"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>{type === "edit" ? "Editing..." : "Posting..."}</>
+                    ) : (
+                      <>{type === "edit" ? "Edit Answer" : "Post an Answer"}</>
+                    )}
+                  </Button>
         </form>
       </Form>
     </div>

@@ -22,17 +22,6 @@ export async function createAnswer(params: CreateAnswerParams) {
       },
     });
 
-    await prisma.question.update({
-      where: { id: question },
-      data: {
-        answers: {
-          connect: { id: answer.id },
-        },
-      },
-    });
-
-    // 
-
     revalidatePath(path);
     return { answer };
   } catch (error) {

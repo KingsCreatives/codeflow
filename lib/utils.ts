@@ -66,6 +66,7 @@ type SortableItem = {
   };
   views?: number;
   createdAt?: Date;
+  [key: string] : any
 };
 
 export function sortByUpvotesAndViews<T extends SortableItem>(items: T[]): T[] {

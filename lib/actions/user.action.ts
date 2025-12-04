@@ -42,7 +42,7 @@ export async function createUser(data: CreateUserParams) {
     });
     return newUser;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -62,7 +62,7 @@ export async function updateUser(params: UpdateUserParams) {
     revalidatePath(path);
     return userUpdatedData;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -81,7 +81,6 @@ export async function deleteUser(params: DeleteUserParams) {
       throw new Error('User not found');
     }
 
-    // Find all questions created by the userToDelete
     const userQuestions = await prisma.question.findMany({
       where: {
         authorId: userToDelete?.id,
@@ -89,7 +88,6 @@ export async function deleteUser(params: DeleteUserParams) {
       distinct: ['id'],
     });
 
-    // Delete all questions created by the userToDelete
     await prisma.question.deleteMany({
       where: {
         authorId: userToDelete?.id,
@@ -139,7 +137,7 @@ export async function saveQuestion(params: ToggleSaveQuestionParams) {
     }
 
     const isQuestionSaved = user.savedQuestions.some(
-      (u) => u.id === questionId
+      (u:any) => u.id === questionId
     );
 
     const data = {
@@ -338,38 +336,25 @@ export async function getUserInfo(params: GetUserStatsParams) {
 export async function getAllUserAnswers(params: GetUserStatsParams) {
   try {
     await connectDatabase();
-    const { userId, page = 1, pageSize = 10 } = params;
+    const { userId } = params;
 
     const totalAnswers = await prisma.answer.count({
-      where: {
-        author: { id: userId },
-      },
+      where: { author: { id: userId } },
     });
 
     const userAnswers = await prisma.answer.findMany({
-      where: {
-        author: { id: userId },
-      },
+      where: { author: { id: userId } },
       include: {
+        question: { select: { id: true, title: true } },
         author: {
-          select: {
-            id: true,
-            clerkId: true,
-            name: true,
-            picture: true,
-          },
+          select: { id: true, clerkId: true, name: true, picture: true },
         },
-        question: {
-          select: {
-            id: true,
-            title: true,
-          },
-        },
-        upvotes: true,
+        upvotes: true, 
+        _count: { select: { upvotes: true } },
       },
     });
 
-    const sortedAnswer = sortByUpvotesAndViews(userAnswers)
+    const sortedAnswer = sortByUpvotesAndViews(userAnswers);
 
     return {
       answers: sortedAnswer,

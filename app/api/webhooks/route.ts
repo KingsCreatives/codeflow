@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Read the raw body (DO NOT PARSE IT)
   const rawBody = await req.text();
   const headerPayload = await headers();
 

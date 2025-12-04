@@ -1,31 +1,38 @@
-import React from 'react'
-import { getAllUserAnswers } from '@/lib/actions/user.action'
-import { SearchParams } from '@/lib/shared.types';
+import React from 'react';
+import { getAllUserAnswers } from '@/lib/actions/user.action';
 import AnswerCard from '../cards/AnswerCard';
+import { SearchParamsProps } from '@/types';
 
-interface UserAnswersTabProps{
+interface UserAnswersTabProps extends SearchParamsProps {
   userId: string;
   clerkId?: string;
-  searchParams?: SearchParams
 }
 
-const UserAnswersTab = async ({userId, clerkId, searchParams} :UserAnswersTabProps ) => {
-  const result = await getAllUserAnswers({userId})
+const UserAnswersTab = async ({
+  userId,
+  clerkId,
+  searchParams,
+}: UserAnswersTabProps) => {
+  const result = await getAllUserAnswers({ userId, page: 1 });
+
   console.log(result)
+
   return (
     <>
       {result.answers?.map((answer) => (
         <AnswerCard
           key={answer.id}
-          title={answer.question.title}
-          author={answer.author}
+          clerkId={clerkId}
           id={answer.id}
-          upvotes={Number(answer.upvotes)}
+          title={answer.question.title}
+          question={answer.question}
+          author={answer.author}
+          voteCount={answer.upvotes.length}
           createdAt={answer.createdAt}
         />
       ))}
     </>
   );
-}
+};
 
-export default UserAnswersTab
+export default UserAnswersTab;

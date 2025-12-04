@@ -6,7 +6,6 @@ import { getTimeStamp } from "@/lib/utils";
 import { SignedIn } from "@clerk/nextjs";
 import EditDeleteAction from "../shared/EditDeleteAction";
 import { auth } from "@clerk/nextjs/server";
-import { vi } from "zod/v4/locales";
 
 interface QuestionProps {
   id: string;
