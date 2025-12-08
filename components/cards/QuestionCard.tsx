@@ -32,6 +32,7 @@ const QuestionCard = async ({
 }: QuestionProps) => {
 
   const {userId} = await auth()
+  
   const userIsAuthor = clerkId && userId === clerkId
 
   return (
