@@ -8,6 +8,7 @@ import {
   GetQuestionByIdParams,
   QuestionVoteParams,
   DeleteQuestionParams,
+  EditQuestionParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
 
@@ -271,10 +272,10 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
 
 export async function deleteQuestion(params: DeleteQuestionParams) {
   try {
-    connectDatabase()
+    connectDatabase();
 
     const { questionId, path } = params;
-    
+
     await prisma.question.delete({
       where: {
         id: questionId,
@@ -298,6 +299,41 @@ export async function deleteQuestion(params: DeleteQuestionParams) {
       SET "questions" = array_remove("questions", ${questionId}::text)
       WHERE ${questionId} = ANY("questions");
 `;
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function editQuestion(params: EditQuestionParams) {
+  try {
+    connectDatabase();
+
+    const { questionId, path,title, content } = params;
+
+    const question = await prisma.question.findFirst({
+      where: {
+        id: questionId,
+      },
+      include: {
+        tags: true,
+      },
+    });
+
+    if (!question) {
+      throw new Error('Question not found');
+    }
+
+    await prisma.question.update({
+      where: {
+        id: questionId
+      },
+      data: {
+        title: title,
+        content: content,
+      }
+    })
 
     revalidatePath(path);
   } catch (error) {

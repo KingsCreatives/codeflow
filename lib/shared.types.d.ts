@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 
-// Prisma type for question with tags, author, and answers count
 const questionWithDetails = Prisma.validator<Prisma.QuestionDefaultArgs>()({
   include: {
     tags: {
@@ -152,7 +151,7 @@ export interface GetAllUsersParams {
 
 export interface UpdateUserParams {
   clerkId: string;
-  updateData: Partial<any>; 
+  updateData: Partial<any>;
   path: string;
 }
 
