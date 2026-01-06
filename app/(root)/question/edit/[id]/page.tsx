@@ -3,7 +3,6 @@ import { auth } from '@clerk/nextjs/server';
 import Question from '@/components/forms/Question';
 import { getUserById } from '@/lib/actions/user.action';
 import { getQuestionById } from '@/lib/actions/question.action';
-import { useParams } from 'next/navigation';
 import { ParamsProps } from '@/types';
 
 const page = async ({ params }: ParamsProps) => {

@@ -64,8 +64,8 @@ const Page = async ({ params, searchParams }: URLProps) => {
         <div className='flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3'>
           <SignedIn>
             {clerkId === userInfo.clerkId && (
-              <Link href={`/profile/edit`}>
-                <Button className='cursor pointer px-4 py-3 min-w-[175px] min-h-[46px]'>
+              <Link href={`/profile/edit`} className='cursor'>
+                <Button className='cursor-pointer px-4 py-3 min-w-[175px] min-h-[46px]'>
                   Edit Profile
                 </Button>
               </Link>

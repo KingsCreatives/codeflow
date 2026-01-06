@@ -34,8 +34,8 @@ export async function getUserById(params: any) {
 export async function createUser(data: CreateUserParams) {
   try {
     await connectDatabase();
-    if(!data.username){
-    throw new Error("Username is required")
+    if (!data.username) {
+      throw new Error('Username is required');
     }
     const newUser = await prisma.user.create({
       data,
@@ -137,7 +137,7 @@ export async function saveQuestion(params: ToggleSaveQuestionParams) {
     }
 
     const isQuestionSaved = user.savedQuestions.some(
-      (u:any) => u.id === questionId
+      (u: any) => u.id === questionId
     );
 
     const data = {
@@ -278,15 +278,15 @@ export async function getUserInfo(params: GetUserStatsParams) {
   }
 }
 
- export async function getAllUserQuestions(params: GetUserStatsParams) {
+export async function getAllUserQuestions(params: GetUserStatsParams) {
   try {
     await connectDatabase();
-    const { userId, page=1, pageSize=10} = params;
+    const { userId, page = 1, pageSize = 10 } = params;
 
     const totalQuestions = await prisma.question.count({
       where: {
         author: { id: userId },
-      }
+      },
     });
 
     const userQuestions = await prisma.question.findMany({
@@ -300,8 +300,8 @@ export async function getUserInfo(params: GetUserStatsParams) {
             name: true,
           },
         },
-        upvotes: { select: { id: true } }, 
-        downvotes: { select: { id: true } }, 
+        upvotes: { select: { id: true } },
+        downvotes: { select: { id: true } },
         author: {
           select: {
             id: true,
@@ -325,13 +325,11 @@ export async function getUserInfo(params: GetUserStatsParams) {
       questions: sortedQuestions,
       totalQuestions,
     };
-    
   } catch (error) {
     console.error('Error fetching user questions:', error);
     throw error;
   }
 }
-
 
 export async function getAllUserAnswers(params: GetUserStatsParams) {
   try {
@@ -349,7 +347,7 @@ export async function getAllUserAnswers(params: GetUserStatsParams) {
         author: {
           select: { id: true, clerkId: true, name: true, picture: true },
         },
-        upvotes: true, 
+        upvotes: true,
         _count: { select: { upvotes: true } },
       },
     });

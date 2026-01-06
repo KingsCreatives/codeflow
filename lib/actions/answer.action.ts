@@ -4,7 +4,6 @@ import { AnswerVoteParams, CreateAnswerParams, DeleteAnswerParams, GetAnswersPar
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
-import path from "path";
 
 export async function createAnswer(params: CreateAnswerParams) {
   try {
