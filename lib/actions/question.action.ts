@@ -1,15 +1,16 @@
-"use server";
+'use server';
 
-import { connectDatabase } from "../db/dbcheck";
-import { prisma } from "@/lib/db/client";
+import { connectDatabase } from '../db/dbcheck';
+import { prisma } from '@/lib/db/client';
 import {
   CreateQuestionParams,
   GetQuestionsParams,
   GetQuestionByIdParams,
   QuestionVoteParams,
-} from "../shared.types";
-import { revalidatePath } from "next/cache";
-
+  DeleteQuestionParams,
+  EditQuestionParams,
+} from '../shared.types';
+import { revalidatePath } from 'next/cache';
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
@@ -33,7 +34,7 @@ export async function getQuestions(params: GetQuestionsParams) {
             clerkId: true,
           },
         },
-        upvotes: { select: { id: true } }, 
+        upvotes: { select: { id: true } },
         downvotes: { select: { id: true } },
         _count: {
           select: {
@@ -48,7 +49,7 @@ export async function getQuestions(params: GetQuestionsParams) {
 
     return { questions };
   } catch (error) {
-    console.error("Error fetching questions:", error);
+    console.error('Error fetching questions:', error);
     return {
       questions: [],
       error: error instanceof Error ? error.message : String(error),
@@ -69,7 +70,7 @@ export async function createQuestion(params: CreateQuestionParams) {
         where: {
           name: {
             equals: tag,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
       });
@@ -136,7 +137,7 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
             clerkId: true,
             name: true,
             picture: true,
-            savedQuestions: true
+            savedQuestions: true,
           },
         },
         answers: {
@@ -151,7 +152,7 @@ export async function getQuestionById(params: GetQuestionByIdParams) {
 
     return { question };
   } catch (error) {
-    console.error("Error fetching question:", error);
+    console.error('Error fetching question:', error);
     return {
       question: null,
       error: error instanceof Error ? error.message : String(error),
@@ -269,3 +270,73 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
   }
 }
 
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    connectDatabase();
+
+    const { questionId, path } = params;
+
+    await prisma.question.delete({
+      where: {
+        id: questionId,
+      },
+    });
+
+    await prisma.answer.deleteMany({
+      where: {
+        questionId: questionId,
+      },
+    });
+
+    await prisma.interaction.deleteMany({
+      where: {
+        questionId: questionId,
+      },
+    });
+
+    await prisma.$executeRaw`
+      UPDATE "Tag"
+      SET "questions" = array_remove("questions", ${questionId}::text)
+      WHERE ${questionId} = ANY("questions");
+`;
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function editQuestion(params: EditQuestionParams) {
+  try {
+    connectDatabase();
+
+    const { questionId, path,title, content } = params;
+
+    const question = await prisma.question.findFirst({
+      where: {
+        id: questionId,
+      },
+      include: {
+        tags: true,
+      },
+    });
+
+    if (!question) {
+      throw new Error('Question not found');
+    }
+
+    await prisma.question.update({
+      where: {
+        id: questionId
+      },
+      data: {
+        title: title,
+        content: content,
+      }
+    })
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
+}

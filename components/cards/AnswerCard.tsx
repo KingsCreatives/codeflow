@@ -44,7 +44,7 @@ const AnswerCard = async ({
         </div>
         <SignedIn>
           {userIsAuthor && (
-            <EditDeleteAction type='Question' itemId={JSON.stringify(id)} />
+            <EditDeleteAction type='Answer' itemId={JSON.stringify(id)} />
           )}
         </SignedIn>
       </div>

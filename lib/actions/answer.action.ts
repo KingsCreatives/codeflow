@@ -1,6 +1,6 @@
 "use server";
 
-import { AnswerVoteParams, CreateAnswerParams, GetAnswersParams } from "../shared.types";
+import { AnswerVoteParams, CreateAnswerParams, DeleteAnswerParams, GetAnswersParams } from "../shared.types";
 import { connectDatabase } from "../db/dbcheck";
 import { prisma } from "@/lib/db/client";
 import { revalidatePath } from "next/cache";
@@ -159,5 +159,37 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
   } catch (error) {
     console.error('Error in downvoteAnswer:', error);
     throw error;
+  }
+}
+
+export async function deleteAnswer(params: DeleteAnswerParams) {
+  try {
+    connectDatabase()
+
+    const { answerId, path } = params;
+    
+    const answer = await prisma.answer.findUnique({where: {id: answerId}})
+
+    if(!answer){
+      throw new Error("Answer not found")
+    }
+
+    await prisma.answer.delete({where: {id: answerId}})
+       
+    await prisma.interaction.deleteMany({
+      where: {
+        answerId: answerId,
+      },
+    });
+
+    await prisma.$executeRaw`
+      UPDATE "Tag"
+      SET "answers" = array_remove("answers", ${answerId}::text)
+      WHERE ${answerId} = ANY("answers");
+`;
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
   }
 }
