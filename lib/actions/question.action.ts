@@ -310,7 +310,7 @@ export async function editQuestion(params: EditQuestionParams) {
   try {
     connectDatabase();
 
-    const { questionId, path,title, content } = params;
+    const { questionId, path, title, content } = params;
 
     const question = await prisma.question.findFirst({
       where: {
@@ -327,15 +327,30 @@ export async function editQuestion(params: EditQuestionParams) {
 
     await prisma.question.update({
       where: {
-        id: questionId
+        id: questionId,
       },
       data: {
         title: title,
         content: content,
-      }
-    })
+      },
+    });
 
     revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getTopQuestions() {
+  try {
+    connectDatabase();
+
+    const topQuestions = await prisma.question.findMany({
+      take: 5,
+      orderBy: [{ views: 'desc' }, { upvotes: { _count: 'desc' } }],
+    });
+
+    return topQuestions;
   } catch (error) {
     console.log(error);
   }

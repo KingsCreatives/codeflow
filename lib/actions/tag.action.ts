@@ -3,14 +3,13 @@
 import { prisma } from "../db/client";
 import { connectDatabase } from "../db/dbcheck";
 import { GetAllTagsParams, GetTopInteractedTagsParams,GetQuestionsByTagIdParams , QuestionWithDetails} from "../shared.types";
-import { getUserById } from "./user.action";
 
 export async function getUserFrequentTags(params: GetTopInteractedTagsParams) {
   try {
     await connectDatabase();
     const { userId, limit = 3 } = params;
 
-    // const user = getUserById(userId);
+   
     const user = prisma.user.findUnique({
       where: {
         id: userId,
@@ -125,5 +124,28 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
   } catch (error) {
     console.log(error);
     throw new Error("Failed to fetch questions by tag ID");
+  }
+}
+
+export async function getPopularTags() {
+  try {
+    const popularTags = await prisma.tag.findMany({
+      take: 5,
+      orderBy: {
+        questions: {
+          _count: 'desc',
+        },
+      },
+      include: {
+        _count: {
+          select: { questions: true },
+        },
+      },
+    });
+
+    return popularTags;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 }
