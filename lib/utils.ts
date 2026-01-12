@@ -1,17 +1,29 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import queryString from 'query-string';
+
+interface UrlQueryParams {
+  params: string;
+  key: string;
+  value: string | null;
+}
+
+interface RemoveUrlQueryParams {
+  params: string;
+  keys: string[];
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function getTimeStamp(createdAt: Date | string): string {
-  if (typeof createdAt === "string") {
+  if (typeof createdAt === 'string') {
     createdAt = new Date(createdAt);
   }
 
   if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
-    return "Invalid date";
+    return 'Invalid date';
   }
 
   const now = new Date(); // Current time
@@ -20,7 +32,7 @@ export function getTimeStamp(createdAt: Date | string): string {
   );
 
   if (diffInSeconds < 0) {
-    return "In the future";
+    return 'In the future';
   }
 
   const intervals: Record<string, number> = {
@@ -40,7 +52,7 @@ export function getTimeStamp(createdAt: Date | string): string {
     }
   }
 
-  return "Just now";
+  return 'Just now';
 }
 
 export function formatNumber(num: number): string {
@@ -66,7 +78,7 @@ type SortableItem = {
   };
   views?: number;
   createdAt?: Date;
-  [key: string] : any
+  [key: string]: any;
 };
 
 export function sortByUpvotesAndViews<T extends SortableItem>(items: T[]): T[] {
@@ -86,4 +98,31 @@ export function sortByUpvotesAndViews<T extends SortableItem>(items: T[]): T[] {
 
     return dateB - dateA;
   });
+}
+
+export function formUrlQuery({ params, key, value }: UrlQueryParams) {
+  const currentUrl = queryString.parse(params);
+  currentUrl[key] = value;
+  return queryString.stringifyUrl(
+    {
+      url: window.location.pathname,
+      query: currentUrl,
+    },
+    { skipNull: true }
+  );
+}
+
+export function removeKeysFromQuery({ params, keys }: RemoveUrlQueryParams) {
+  const currentUrl = queryString.parse(params);
+  keys.forEach((key) => {
+    delete currentUrl[key];
+  });
+
+  return queryString.stringifyUrl(
+    {
+      url: window.location.pathname,
+      query: currentUrl,
+    },
+    { skipNull: true }
+  );
 }
