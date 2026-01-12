@@ -2,6 +2,7 @@
 
 import { connectDatabase } from '../db/dbcheck';
 import { prisma } from '@/lib/db/client';
+import { Prisma} from '@prisma/client';
 import {
   CreateQuestionParams,
   GetQuestionsParams,
@@ -12,11 +13,22 @@ import {
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
 
+
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     await connectDatabase();
 
+    const {searchQuery} = params;
+
+    const query:Prisma.QuestionWhereInput = {}
+    if(searchQuery){
+      query.OR = [
+        { title: { contains: searchQuery, mode: 'insensitive' } },
+        { content: { contains: searchQuery, mode: 'insensitive' } },
+      ];
+    }
     const questions = await prisma.question.findMany({
+      where: query,
       take: 10,
       include: {
         tags: {
