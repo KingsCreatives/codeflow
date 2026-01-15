@@ -1,32 +1,36 @@
-import React from 'react'
-import { getQuestionsByTagId } from '@/lib/actions/tag.action'
-import NoResult from '@/components/shared/NoResult'
-import QuestionCard from '@/components/cards/QuestionCard'
-import { formatNumber } from '@/lib/utils'
-import LocalSearchbar from '@/components/shared/search/LocalSearchbar'
-import { URLProps } from '@/types'
+import React from 'react';
+import { getQuestionsByTagId } from '@/lib/actions/tag.action';
+import NoResult from '@/components/shared/NoResult';
+import QuestionCard from '@/components/cards/QuestionCard';
+import { formatNumber } from '@/lib/utils';
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { URLProps } from '@/types';
 
-const Page =  async ({params, searchParams}: URLProps) => {
+const Page = async ({ params, searchParams }: URLProps) => {
+  const { id } = await params;
+  const resolvedSearchParams = await searchParams;
 
-  const {id} = await params
-  const resolvedSearchParams = await searchParams
+  const result = await getQuestionsByTagId({
+    tagId: id,
+    page: resolvedSearchParams.page
+      ? parseInt(resolvedSearchParams.page as string)
+      : 1,
+    pageSize: resolvedSearchParams.pageSize
+      ? parseInt(resolvedSearchParams.pageSize as string)
+      : 10,
+    searchQuery: (resolvedSearchParams.searchQuery as string) || '',
+  });
 
-    const result = await getQuestionsByTagId({
-      tagId: id,
-      page: resolvedSearchParams.page ? parseInt(resolvedSearchParams.page as string) : 1,
-      pageSize: resolvedSearchParams.pageSize ? parseInt(resolvedSearchParams.pageSize as string) : 10,
-      searchQuery: resolvedSearchParams.searchQuery as string || '',
-    })
+  const tag =
+    result.tagName[0].toUpperCase() + result.tagName.slice(1) || 'Tag';
 
-  const tag = result.tagName[0].toUpperCase() + result.tagName.slice(1) || 'Tag';
-    
   return (
     <>
       <h1 className='h1-bold text-dark100_light900'>{tag}</h1>
 
       <div className='mt-11 w-full'>
         <LocalSearchbar
-          route='/'
+          route={`/tags/${(await params).id}`}
           placeholder='Search for questions, topics, or tags...'
           iconPosition='left'
           imgSrc='/assets/icons/search.svg'
@@ -35,7 +39,6 @@ const Page =  async ({params, searchParams}: URLProps) => {
       </div>
 
       <div className='mt-10 flex w-full flex-col gap-6'>
-        {/* FIXED: Check array length, not object property */}
         {result.savedQuestions.length > 0 ? (
           result.savedQuestions.map((question) => (
             <QuestionCard
@@ -68,6 +71,6 @@ const Page =  async ({params, searchParams}: URLProps) => {
       </div>
     </>
   );
-}
+};
 
-export default Page
+export default Page;
