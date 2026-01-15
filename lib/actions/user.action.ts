@@ -2,6 +2,8 @@
 
 import { connectDatabase } from '../db/dbcheck';
 import { prisma } from '@/lib/db/client';
+import { Prisma } from '@prisma/client';
+
 import {
   CreateUserParams,
   DeleteUserParams,
@@ -109,9 +111,23 @@ export async function deleteUser(params: DeleteUserParams) {
 export async function getAllUsers(params: GetAllUsersParams) {
   try {
     await connectDatabase();
-    const { page = 1, pageSize = 20, filter, searchQuery } = params;
 
-    const users = await prisma.user.findMany({});
+    const { searchQuery } = params;
+
+    const query: Prisma.UserWhereInput = {};
+    if (searchQuery) {
+      query.OR = [
+        { name: { contains: searchQuery, mode: 'insensitive' } },
+        { username: { contains: searchQuery, mode: 'insensitive' } },
+      ];
+    }
+
+    const users = await prisma.user.findMany({
+          where: query,
+          take: 10,
+        });
+
+    // const users = await prisma.user.findMany({});
     return { users };
   } catch (error) {
     console.log(error);
