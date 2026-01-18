@@ -2,7 +2,7 @@
 
 import { connectDatabase } from '../db/dbcheck';
 import { prisma } from '@/lib/db/client';
-import { Prisma} from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   CreateQuestionParams,
   GetQuestionsParams,
@@ -13,20 +13,38 @@ import {
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
 
-
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     await connectDatabase();
 
-    const {searchQuery} = params;
+    const { searchQuery, filter } = params;
 
-    const query:Prisma.QuestionWhereInput = {}
-    if(searchQuery){
+    const query: Prisma.QuestionWhereInput = {};
+    if (searchQuery) {
       query.OR = [
         { title: { contains: searchQuery, mode: 'insensitive' } },
         { content: { contains: searchQuery, mode: 'insensitive' } },
       ];
     }
+
+    let sortFilters = {};
+
+    switch (filter) {
+      case 'newest':
+        sortFilters = { createdAt: 'desc' };
+        break;
+      case 'frequent':
+        sortFilters = { views: 'desc' };
+        break;
+      case 'unanswered':
+        query.answers = {
+          none: {},
+        };
+        break;
+      default:
+        break;
+    }
+
     const questions = await prisma.question.findMany({
       where: query,
       take: 10,
@@ -54,9 +72,10 @@ export async function getQuestions(params: GetQuestionsParams) {
           },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy:
+        Object.keys(sortFilters).length > 0
+          ? sortFilters
+          : { createdAt: 'desc' },
     });
 
     return { questions };
