@@ -36,7 +36,24 @@ export async function getAllTags(params: GetAllTagsParams) {
   try {
     await connectDatabase();
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
+
+    let sortOptions = {};
+
+    switch (filter) {
+      case 'recent':
+        sortOptions = { createdAt: 'desc' };
+        break;
+      case 'popular':
+        sortOptions = { questions: 'desc' };
+        break;
+      case 'name':
+        sortOptions = { name: 'desc' };
+        break;
+      case 'old':
+        sortOptions = { createdAt: 'asc' };
+        break;
+    }
 
     const query: Prisma.TagWhereInput = {};
 
@@ -46,9 +63,7 @@ export async function getAllTags(params: GetAllTagsParams) {
 
     const tags = await prisma.tag.findMany({
       where: query,
-      orderBy: {
-        id: 'desc',
-      },
+      orderBy: Object.values(sortOptions).length > 0 ? sortOptions : '   ',
       include: {
         questions: {
           select: {
