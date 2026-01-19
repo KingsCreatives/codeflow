@@ -10,15 +10,15 @@ import { auth } from '@clerk/nextjs/server';
 import { SearchParamsProps } from '@/types';
 import { use } from 'react';
 
-export default async function Home({searchParams}: SearchParamsProps) {
-
+export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = await auth();
 
-  if(!userId) return null
+  if (!userId) return null;
 
   const { savedQuestions, totalCount } = await getAllSavedQuestions({
     clerkId: userId,
-    searchQuery: searchParams.q
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
   });
 
   return (
@@ -42,7 +42,6 @@ export default async function Home({searchParams}: SearchParamsProps) {
       <HomeFilters />
 
       <div className='mt-10 flex w-full flex-col gap-6'>
-      
         {savedQuestions.length > 0 ? (
           savedQuestions.map((question) => (
             <QuestionCard

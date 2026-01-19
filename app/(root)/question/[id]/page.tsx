@@ -11,14 +11,17 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/db/client';
 import AllAnswers from '@/components/shared/AllAnswers';
 import Votes from '@/components/shared/Votes';
+import { useSearchParams } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>; // Add Promise here
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
 const page = async ({ params, searchParams }: PageProps) => {
-  const {id} = await params
+  const { id } = await params;
+  const resolvedSearchParams = await searchParams;
+
   const result = await getQuestionById({
     questionId: id,
   });
@@ -34,7 +37,7 @@ const page = async ({ params, searchParams }: PageProps) => {
     },
   });
 
-   return (
+  return (
     <>
       <div>
         <div className='flex-start w-full flex-col'>
@@ -74,7 +77,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                 }
                 hasSaved={
                   user?.savedQuestions?.some(
-                    (q) => q.id === result.question?.id
+                    (q) => q.id === result.question?.id,
                   ) ?? false
                 }
               />
@@ -133,8 +136,14 @@ const page = async ({ params, searchParams }: PageProps) => {
 
       <AllAnswers
         questionId={result.question?.id ?? ''}
-        authorId={user?.id ?? ''}
+        userId={user?.id ?? ''}
         totalAnswers={result.question?.answers.length || 0}
+        page={resolvedSearchParams?.page ? +resolvedSearchParams.page : 1}
+        filter={
+          Array.isArray(resolvedSearchParams?.filter)
+            ? resolvedSearchParams.filter[0]
+            : resolvedSearchParams?.filter
+        }
       />
 
       <Answer

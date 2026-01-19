@@ -9,7 +9,6 @@ import {
   DeleteUserParams,
   GetAllUsersParams,
   GetSavedQuestionsParams,
-  GetUserByIdParams,
   GetUserStatsParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
@@ -112,7 +111,7 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     await connectDatabase();
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
 
     const query: Prisma.UserWhereInput = {};
     if (searchQuery) {
@@ -122,12 +121,26 @@ export async function getAllUsers(params: GetAllUsersParams) {
       ];
     }
 
-    const users = await prisma.user.findMany({
-          where: query,
-          take: 10,
-        });
+    let sortOptions = {};
 
-    // const users = await prisma.user.findMany({});
+    switch (filter) {
+      case 'new_users':
+        sortOptions = { joinedAt: 'desc' };
+        break;
+      case 'old_users':
+        sortOptions = { joinedAt: 'asc' };
+        break;
+      case 'top_contributors':
+        sortOptions = { reputation: 'desc' };
+        break;
+    }
+
+    const users = await prisma.user.findMany({
+      where: query,
+      take: 10,
+      orderBy: Object.values(sortOptions).length > 1 ? sortOptions : '',
+    });
+
     return { users };
   } catch (error) {
     console.log(error);
@@ -153,7 +166,7 @@ export async function saveQuestion(params: ToggleSaveQuestionParams) {
     }
 
     const isQuestionSaved = user.savedQuestions.some(
-      (u: any) => u.id === questionId
+      (u: any) => u.id === questionId,
     );
 
     const data = {
@@ -179,10 +192,10 @@ export async function saveQuestion(params: ToggleSaveQuestionParams) {
 }
 
 export async function getAllSavedQuestions(
-  params: GetSavedQuestionsParams
+  params: GetSavedQuestionsParams,
 ): Promise<SavedQuestionsResponse> {
   try {
-    const { clerkId, searchQuery, page = 1, pageSize = 10 } = params;
+    const { clerkId, searchQuery, page = 1, pageSize = 10, filter } = params;
 
     const user = await prisma.user.findUnique({
       where: { clerkId },
@@ -202,6 +215,26 @@ export async function getAllSavedQuestions(
         }
       : {};
 
+    let sortOptions = {};
+
+    switch (filter) {
+      case 'most_recent':
+        sortOptions = { createdAt: 'desc' };
+        break;
+      case 'oldest':
+        sortOptions = { createdAt: 'asc' };
+        break;
+      case 'most_viewed':
+        sortOptions = { views: 'desc' };
+        break;
+      case 'most_voted':
+        sortOptions = { upvotes: 'desc' };
+        break;
+      case 'most_answered':
+        sortOptions = { answers: 'desc' };
+        break;
+    }
+
     const savedQuestions: QuestionWithDetails[] =
       await prisma.question.findMany({
         where: {
@@ -210,7 +243,10 @@ export async function getAllSavedQuestions(
           },
           ...searchFilter,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy:
+          Object.values(sortOptions).length > 0
+            ? sortOptions
+            : { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {

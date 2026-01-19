@@ -1,9 +1,14 @@
-"use server";
+'use server';
 
-import { AnswerVoteParams, CreateAnswerParams, DeleteAnswerParams, GetAnswersParams } from "../shared.types";
-import { connectDatabase } from "../db/dbcheck";
-import { prisma } from "@/lib/db/client";
-import { revalidatePath } from "next/cache";
+import {
+  AnswerVoteParams,
+  CreateAnswerParams,
+  DeleteAnswerParams,
+  GetAnswersParams,
+} from '../shared.types';
+import { connectDatabase } from '../db/dbcheck';
+import { prisma } from '@/lib/db/client';
+import { revalidatePath } from 'next/cache';
 
 export async function createAnswer(params: CreateAnswerParams) {
   try {
@@ -24,7 +29,7 @@ export async function createAnswer(params: CreateAnswerParams) {
     revalidatePath(path);
     return { answer };
   } catch (error) {
-    console.error("Error creating answer:", error);
+    console.error('Error creating answer:', error);
     return {
       answer: null,
       error: error instanceof Error ? error.message : String(error),
@@ -32,10 +37,31 @@ export async function createAnswer(params: CreateAnswerParams) {
   }
 }
 
-export async function getAllAnswers(params: GetAnswersParams){
+export async function getAllAnswers(params: GetAnswersParams) {
   try {
     await connectDatabase();
-    const { questionId } = params;
+    const { questionId, sortBy } = params;
+
+    let orderByOptions = {};
+
+    switch (sortBy) {
+      case 'highestUpvotes':
+        orderByOptions = { upvotes: { _count: 'desc' } };
+        break;
+      case 'lowestUpvotes':
+        orderByOptions = { upvotes: { _count: 'asc' } };
+        break;
+      case 'recent':
+        orderByOptions = { created: 'desc' };
+        break;
+      case 'old':
+        orderByOptions = { createdAt: 'asc' };
+        break;
+      default:
+        orderByOptions = { createdAt: 'desc' };
+        break;
+    }
+
     const answers = await prisma.answer.findMany({
       where: { questionId: questionId },
       include: {
@@ -47,33 +73,29 @@ export async function getAllAnswers(params: GetAnswersParams){
           },
         },
         upvotes: true,
-        downvotes: true
+        downvotes: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: orderByOptions,
     });
     return { answers };
   } catch (error) {
-    console.error("Error fetching answers:", error);
+    console.error('Error fetching answers:', error);
   }
 }
 
-export async function upvoteAnswer(params: AnswerVoteParams){
+export async function upvoteAnswer(params: AnswerVoteParams) {
   try {
-    await connectDatabase()
-    const {answerId, userId, hasdownVoted, hasupVoted, path} = params
+    await connectDatabase();
+    const { answerId, userId, hasdownVoted, hasupVoted, path } = params;
     let data = {};
 
     if (hasupVoted) {
-      
       data = {
         upvotes: {
           disconnect: { id: userId },
         },
       };
     } else if (hasdownVoted) {
-      
       data = {
         downvotes: {
           disconnect: { id: userId },
@@ -89,24 +111,22 @@ export async function upvoteAnswer(params: AnswerVoteParams){
         },
       };
     }
-    
-      const answer = await prisma.answer.update({
-          where: { id: answerId },
-          data,
-          include: {
-            upvotes: true,
-            downvotes: true,
-          },
-        });
-    
-        if (!answer) {
-          throw new Error('Answer not found');
-        }
-    
-        revalidatePath(path);
-  } catch (error) {
-    
-  }
+
+    const answer = await prisma.answer.update({
+      where: { id: answerId },
+      data,
+      include: {
+        upvotes: true,
+        downvotes: true,
+      },
+    });
+
+    if (!answer) {
+      throw new Error('Answer not found');
+    }
+
+    revalidatePath(path);
+  } catch (error) {}
 }
 
 export async function downvoteAnswer(params: AnswerVoteParams) {
@@ -133,7 +153,6 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
         },
       };
     } else {
-      
       data = {
         downvotes: {
           connect: { id: userId },
@@ -163,18 +182,18 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 
 export async function deleteAnswer(params: DeleteAnswerParams) {
   try {
-    connectDatabase()
+    connectDatabase();
 
     const { answerId, path } = params;
-    
-    const answer = await prisma.answer.findUnique({where: {id: answerId}})
 
-    if(!answer){
-      throw new Error("Answer not found")
+    const answer = await prisma.answer.findUnique({ where: { id: answerId } });
+
+    if (!answer) {
+      throw new Error('Answer not found');
     }
 
-    await prisma.answer.delete({where: {id: answerId}})
-       
+    await prisma.answer.delete({ where: { id: answerId } });
+
     await prisma.interaction.deleteMany({
       where: {
         answerId: answerId,

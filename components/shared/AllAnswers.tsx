@@ -4,27 +4,30 @@ import Filter from './Filter';
 import { getAllAnswers } from '@/lib/actions/answer.action';
 import Link from 'next/link';
 import Image from 'next/image';
-import { auth } from '@clerk/nextjs/server';
 import { getTimeStamp } from '@/lib/utils';
 import ParsedContent from './ParsedContent';
 import Votes from './Votes';
 
 interface AllAnswersProps {
   questionId: string;
-  authorId: string;
+  userId: string;
   totalAnswers: number;
   page?: number;
-  filter?: number;
+  filter?: string;
 }
 
 const AllAnswers = async ({
   questionId,
-  authorId,
+  userId,
   totalAnswers,
   page,
   filter,
 }: AllAnswersProps) => {
-  const result = await getAllAnswers({ questionId });
+  const result = await getAllAnswers({
+    questionId,
+    page: page ? +page : 1,
+    sortBy: filter,
+  });
   // const { userId } = await auth();
 
   return (
@@ -41,8 +44,7 @@ const AllAnswers = async ({
             <div className='flex items-center justify-between'>
               <div className='mb-8 flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2'>
                 <Link
-                  href={''}
-                  // href={`/profile/${answer.author.id}`}
+                  href={`/profile/${answer.author.id}`}
                   className='flex flex-1 items-start gap-1 sm:items-center'
                 >
                   <Image
@@ -70,10 +72,13 @@ const AllAnswers = async ({
                     upvotes={answer.upvotes?.length ?? 0}
                     downvotes={answer?.downvotes?.length ?? 0}
                     hasupVoted={
-                      answer?.upvotes?.some((u) => u.id === answer.authorId) ?? false
+                      answer?.upvotes?.some((u) => u.id === answer.authorId) ??
+                      false
                     }
                     hasdownVoted={
-                      answer?.downvotes?.some((u) => u.id === answer.authorId) ?? false
+                      answer?.downvotes?.some(
+                        (u) => u.id === answer.authorId,
+                      ) ?? false
                     }
                   />
                 </div>
