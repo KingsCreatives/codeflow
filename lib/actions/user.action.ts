@@ -9,7 +9,6 @@ import {
   DeleteUserParams,
   GetAllUsersParams,
   GetSavedQuestionsParams,
-  GetUserByIdParams,
   GetUserStatsParams,
   ToggleSaveQuestionParams,
   UpdateUserParams,
@@ -125,13 +124,13 @@ export async function getAllUsers(params: GetAllUsersParams) {
     let sortOptions = {};
 
     switch (filter) {
-      case 'new users':
+      case 'new_users':
         sortOptions = { joinedAt: 'desc' };
         break;
-      case 'old users':
+      case 'old_users':
         sortOptions = { joinedAt: 'asc' };
         break;
-      case 'top contributors':
+      case 'top_contributors':
         sortOptions = { reputation: 'desc' };
         break;
     }
@@ -196,7 +195,7 @@ export async function getAllSavedQuestions(
   params: GetSavedQuestionsParams,
 ): Promise<SavedQuestionsResponse> {
   try {
-    const { clerkId, searchQuery, page = 1, pageSize = 10 } = params;
+    const { clerkId, searchQuery, page = 1, pageSize = 10, filter } = params;
 
     const user = await prisma.user.findUnique({
       where: { clerkId },
@@ -216,6 +215,26 @@ export async function getAllSavedQuestions(
         }
       : {};
 
+    let sortOptions = {};
+
+    switch (filter) {
+      case 'most_recent':
+        sortOptions = { createdAt: 'desc' };
+        break;
+      case 'oldest':
+        sortOptions = { createdAt: 'asc' };
+        break;
+      case 'most_viewed':
+        sortOptions = { views: 'desc' };
+        break;
+      case 'most_voted':
+        sortOptions = { upvotes: 'desc' };
+        break;
+      case 'most_answered':
+        sortOptions = { answers: 'desc' };
+        break;
+    }
+
     const savedQuestions: QuestionWithDetails[] =
       await prisma.question.findMany({
         where: {
@@ -224,7 +243,10 @@ export async function getAllSavedQuestions(
           },
           ...searchFilter,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy:
+          Object.values(sortOptions).length > 0
+            ? sortOptions
+            : { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
