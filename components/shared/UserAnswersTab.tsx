@@ -13,9 +13,10 @@ const UserAnswersTab = async ({
   clerkId,
   searchParams,
 }: UserAnswersTabProps) => {
-  const result = await getAllUserAnswers({ userId, page: 1 });
+  const resolvedSearchParams = await searchParams;
+  const page = resolvedSearchParams.page ? +resolvedSearchParams.page : 1;
 
-  console.log(result)
+  const result = await getAllUserAnswers({ userId, page });
 
   return (
     <>

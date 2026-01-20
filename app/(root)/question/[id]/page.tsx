@@ -11,8 +11,6 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/db/client';
 import AllAnswers from '@/components/shared/AllAnswers';
 import Votes from '@/components/shared/Votes';
-import { useSearchParams } from 'next/navigation';
-
 interface PageProps {
   params: Promise<{ id: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;

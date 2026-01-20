@@ -27,11 +27,11 @@ export interface Country {
 }
 
 export interface ParamsProps {
-  params: { id: string };
+  params: Promise<{ id: string }>; 
 }
 
 export interface SearchParamsProps {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export interface URLProps {

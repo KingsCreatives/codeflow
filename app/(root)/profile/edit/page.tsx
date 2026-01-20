@@ -5,12 +5,14 @@ import { ParamsProps } from '@/types';
 import Profile from '@/components/forms/Profile';
 import { redirect } from 'next/navigation';
 
-const page = async ({ params }: ParamsProps) => {
+const Page = async ({ params }: ParamsProps) => {
+  const { id } = await params;
+
   const { userId } = await auth();
 
   if (!userId) return null;
 
-  const user = await getUserById({ userId });
+  const user = await getUserById({ userId: id });
 
   if (!user) {
     redirect('/');
@@ -35,4 +37,4 @@ const page = async ({ params }: ParamsProps) => {
   );
 };
 
-export default page;
+export default Page;
