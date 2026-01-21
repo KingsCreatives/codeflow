@@ -1,19 +1,20 @@
-import HomeFilters from "@/components/Home/HomeFilters";
-import Filter from "@/components/shared/Filter";
-import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
-import { Button } from "@/components/ui/button";
-import { HomePageFilters } from "@/constants/filters";
-import NoResult from "@/components/shared/NoResult";
-import QuestionCard from "@/components/cards/QuestionCard";
-import Link from "next/link";
-import { formatNumber } from "@/lib/utils";
-import { getQuestions } from "@/lib/actions/question.action";
-import { SearchParamsProps } from "@/types";
+import HomeFilters from '@/components/Home/HomeFilters';
+import Filter from '@/components/shared/Filter';
+import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
+import { Button } from '@/components/ui/button';
+import { HomePageFilters } from '@/constants/filters';
+import NoResult from '@/components/shared/NoResult';
+import QuestionCard from '@/components/cards/QuestionCard';
+import Link from 'next/link';
+import { formatNumber } from '@/lib/utils';
+import { getQuestions } from '@/lib/actions/question.action';
+import { SearchParamsProps } from '@/types';
 
-export default async function Home({searchParams} : SearchParamsProps) {
+export default async function Home({ searchParams }: SearchParamsProps) {
+  const resolvedSearchParams = await searchParams;
   const { questions: fetchedQuestions = [] } = await getQuestions({
-    searchQuery: searchParams.q,
-    filter: searchParams.filter,
+    searchQuery: resolvedSearchParams.q as string,
+    filter: resolvedSearchParams.filter as string,
   });
 
   return (
@@ -65,7 +66,7 @@ export default async function Home({searchParams} : SearchParamsProps) {
               createdAt={question.createdAt}
               voteCount={formatNumber(
                 (question.upvotes?.length ?? 0) -
-                  (question.downvotes?.length ?? 0)
+                  (question.downvotes?.length ?? 0),
               )}
             />
           ))

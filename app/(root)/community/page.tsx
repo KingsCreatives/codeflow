@@ -4,7 +4,12 @@ import { getAllUsers } from '@/lib/actions/user.action';
 import { SearchParamsProps } from '@/types';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
-  const result = await getAllUsers({ searchQuery: searchParams.q, filter: searchParams.filter });
+  const resolvedSearchParams = await searchParams;
+  
+  const result = await getAllUsers({
+    searchQuery: resolvedSearchParams.q as string,
+    filter: resolvedSearchParams.filter as string,
+  });
 
   return (
     <>

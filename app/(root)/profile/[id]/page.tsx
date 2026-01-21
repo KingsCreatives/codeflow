@@ -1,7 +1,7 @@
 import React from 'react';
 import { getUserInfo } from '@/lib/actions/user.action';
 import { URLProps } from '@/types';
-import { SignIn, SignedIn } from '@clerk/nextjs';
+import { SignedIn } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
@@ -14,8 +14,8 @@ import UserQuestionsTab from '@/components/shared/UserQuestionsTab';
 import UserAnswersTab from '@/components/shared/UserAnswersTab';
 
 const Page = async ({ params, searchParams }: URLProps) => {
-  const {id} = await params;
-  const resolvedSearchParams = await searchParams
+  const { id } = await params;
+  const resolvedSearchParams = await searchParams;
 
   const userInfo = await getUserInfo({ userId: id });
 
@@ -91,11 +91,15 @@ const Page = async ({ params, searchParams }: URLProps) => {
             <UserQuestionsTab
               userId={userInfo.id}
               clerkId={userInfo.clerkId}
-              searchParams={resolvedSearchParams}
+              searchParams={searchParams}
             />
           </TabsContent>
           <TabsContent value='answers' className='flex w-full flex-col gap-6'>
-            <UserAnswersTab userId={userInfo.id} clerkId={userInfo.clerkId} searchParams={resolvedSearchParams} />
+            <UserAnswersTab
+              userId={userInfo.id}
+              clerkId={userInfo.clerkId}
+              searchParams={searchParams}
+            />
           </TabsContent>
         </Tabs>
       </div>

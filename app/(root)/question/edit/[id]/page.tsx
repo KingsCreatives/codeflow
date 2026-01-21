@@ -6,13 +6,14 @@ import { getQuestionById } from '@/lib/actions/question.action';
 import { ParamsProps } from '@/types';
 
 const page = async ({ params }: ParamsProps) => {
+  const { id } = await params;
   const { userId } = await auth();
 
   if (!userId) return null;
 
   const user = await getUserById({ userId });
 
-  const result = await getQuestionById({ questionId: params.id });
+  const result = await getQuestionById({ questionId: id });
 
   // console.log(result)
 

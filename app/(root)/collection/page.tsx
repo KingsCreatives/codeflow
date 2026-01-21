@@ -8,17 +8,17 @@ import { formatNumber } from '@/lib/utils';
 import { getAllSavedQuestions } from '@/lib/actions/user.action';
 import { auth } from '@clerk/nextjs/server';
 import { SearchParamsProps } from '@/types';
-import { use } from 'react';
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = await auth();
+  const resolvedSearchParams = await searchParams;
 
   if (!userId) return null;
 
   const { savedQuestions, totalCount } = await getAllSavedQuestions({
     clerkId: userId,
-    searchQuery: searchParams.q,
-    filter: searchParams.filter,
+    searchQuery: resolvedSearchParams.q as string,
+    filter: resolvedSearchParams.filter as string,
   });
 
   return (
