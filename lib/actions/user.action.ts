@@ -133,12 +133,14 @@ export async function getAllUsers(params: GetAllUsersParams) {
       case 'top_contributors':
         sortOptions = { reputation: 'desc' };
         break;
+      default:
+        sortOptions = { joinedAt: 'desc' };
     }
 
     const users = await prisma.user.findMany({
       where: query,
       take: 10,
-      orderBy: Object.values(sortOptions).length > 1 ? sortOptions : '',
+      orderBy: sortOptions,
     });
 
     return { users };

@@ -16,7 +16,9 @@ interface Props {
 }
 
 const UserCard = async ({ user }: Props) => {
+
   const usersPopularTags = await getUserFrequentTags({ userId: user.id });
+  
   return (
     <Link
       href={`/profile/${user.clerkId}`}

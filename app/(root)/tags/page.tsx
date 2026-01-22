@@ -37,7 +37,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
             <Link
               key={tag.id}
               href={`/tags/${tag.id}`}
-              className='shadow-light100_darknone md:m-6 flex flex-col w-full md:w-[260px]'
+              className='shadow-light100_darknone md:m-6 flex flex-col w-full md:w-65'
             >
               <article className='flex w-full background-light900_dark200 light-border flex-col rounded-2xl border px-8 py-10'>
                 <div className='background-light800_dark400 w-fit rounded-sm px-5 py-1.5'>
