@@ -13,9 +13,10 @@ import Pagination from '@/components/shared/Pagination';
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const resolvedSearchParams = await searchParams;
-  const { questions: fetchedQuestions = [] } = await getQuestions({
+  const { questions: fetchedQuestions = [], isNext } = await getQuestions({
     searchQuery: resolvedSearchParams.q as string,
     filter: resolvedSearchParams.filter as string,
+    page: resolvedSearchParams.page ? +resolvedSearchParams.page : 1,
   });
 
   return (
@@ -82,8 +83,10 @@ export default async function Home({ searchParams }: SearchParamsProps) {
       </div>
       <div className='mt-10'>
         <Pagination
-          pageNumber={searchParams?.page ? +searchParams.page : 1}
-          isNext={result.isNext}
+          pageNumber={
+            resolvedSearchParams?.page ? +resolvedSearchParams.page : 1
+          }
+          isNext={isNext}
         />
       </div>
     </>

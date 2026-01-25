@@ -3,8 +3,7 @@
 import React from 'react';
 import { Button } from '../ui/button';
 import { formUrlQuery } from '@/lib/utils';
-import { useRouter } from 'next/router';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 interface Props {
   pageNumber: number;
@@ -12,20 +11,20 @@ interface Props {
 }
 
 const Pagination = ({ pageNumber, isNext }: Props) => {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleNavigation = (direction: string) => {
     const nextPageNumber =
       direction === 'prev' ? pageNumber - 1 : pageNumber + 1;
 
-      const newUrl = formUrlQuery({
-        params: searchParams.toString(),
-        key: 'page',
-        value: nextPageNumber.toString()
-      })
+    const newUrl = formUrlQuery({
+      params: searchParams.toString(),
+      key: 'page',
+      value: nextPageNumber.toString(),
+    });
 
-      router.push(newUrl)
+    router.push(newUrl);
   };
 
   return (
