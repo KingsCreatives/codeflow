@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { getTimeStamp } from '@/lib/utils';
 import ParsedContent from './ParsedContent';
 import Votes from './Votes';
+import Pagination from './Pagination';
 
 interface AllAnswersProps {
   questionId: string;
@@ -28,7 +29,6 @@ const AllAnswers = async ({
     page: page ? +page : 1,
     sortBy: filter,
   });
-  // const { userId } = await auth();
 
   return (
     <div className='mt-11'>
@@ -87,6 +87,14 @@ const AllAnswers = async ({
             <ParsedContent data={answer.content} />
           </article>
         ))}
+      </div>
+      <div className='mt-10'>
+        <Pagination
+          pageNumber={
+           page ? +page : 1
+          }
+          isNext={result.isNext}
+        />
       </div>
     </div>
   );

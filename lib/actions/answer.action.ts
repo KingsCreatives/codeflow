@@ -40,7 +40,9 @@ export async function createAnswer(params: CreateAnswerParams) {
 export async function getAllAnswers(params: GetAnswersParams) {
   try {
     await connectDatabase();
-    const { questionId, sortBy } = params;
+    const { questionId, sortBy, page = 1, pageSize = 10 } = params;
+
+    const skipAmount = (page - 1) * pageSize;
 
     let orderByOptions = {};
 
@@ -64,6 +66,8 @@ export async function getAllAnswers(params: GetAnswersParams) {
 
     const answers = await prisma.answer.findMany({
       where: { questionId: questionId },
+      take: pageSize,
+      skip: skipAmount,
       include: {
         author: {
           select: {
@@ -77,9 +81,21 @@ export async function getAllAnswers(params: GetAnswersParams) {
       },
       orderBy: orderByOptions,
     });
-    return { answers };
+
+    const answerCount = await prisma.answer.count({
+      where: { questionId: questionId },
+    });
+
+    const isNext = answerCount > skipAmount + answers.length
+
+    return { answers, isNext};
   } catch (error) {
-    console.error('Error fetching answers:', error);
+    console.error('Error fetching questions:', error);
+    return {
+      questions: [],
+      isNext: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 

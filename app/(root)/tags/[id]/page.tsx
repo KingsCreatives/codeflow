@@ -5,6 +5,7 @@ import QuestionCard from '@/components/cards/QuestionCard';
 import { formatNumber } from '@/lib/utils';
 import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
 import { URLProps } from '@/types';
+import Pagination from '@/components/shared/Pagination';
 
 const Page = async ({ params, searchParams }: URLProps) => {
   const { id } = await params;
@@ -12,18 +13,16 @@ const Page = async ({ params, searchParams }: URLProps) => {
 
   const result = await getQuestionsByTagId({
     tagId: id,
-    page: resolvedSearchParams.page
-      ? parseInt(resolvedSearchParams.page as string)
-      : 1,
+    page: resolvedSearchParams.page ? +resolvedSearchParams : 1,
     pageSize: resolvedSearchParams.pageSize
       ? parseInt(resolvedSearchParams.pageSize as string)
       : 10,
     searchQuery: (resolvedSearchParams.searchQuery as string) || '',
   });
 
-  const tag =
-    result.tagName[0].toUpperCase() + result.tagName.slice(1) || 'Tag';
-
+  const tag = result.tagName
+    ? result.tagName[0].toUpperCase() + result.tagName.slice(1)
+    : 'Tag';
   return (
     <>
       <h1 className='h1-bold text-dark100_light900'>{tag}</h1>
@@ -69,6 +68,11 @@ const Page = async ({ params, searchParams }: URLProps) => {
           />
         )}
       </div>
+
+      <Pagination
+        pageNumber={resolvedSearchParams?.page ? +resolvedSearchParams.page : 1}
+        isNext={result.isNext}
+      />
     </>
   );
 };

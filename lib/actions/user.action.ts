@@ -111,7 +111,9 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     await connectDatabase();
 
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+    const skipPages = (page - 1) * pageSize;
 
     const query: Prisma.UserWhereInput = {};
     if (searchQuery) {
@@ -139,13 +141,23 @@ export async function getAllUsers(params: GetAllUsersParams) {
 
     const users = await prisma.user.findMany({
       where: query,
-      take: 10,
+      skip: skipPages,
+      take: pageSize,
       orderBy: sortOptions,
     });
 
-    return { users };
+    const userCount = await prisma.user.count({ where: query });
+
+    const isNext = userCount > skipPages + users.length;
+
+    return { users, isNext };
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching users:', error);
+    return {
+      users: [],
+      isNext: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -197,7 +209,9 @@ export async function getAllSavedQuestions(
   params: GetSavedQuestionsParams,
 ): Promise<SavedQuestionsResponse> {
   try {
-    const { clerkId, searchQuery, page = 1, pageSize = 10, filter } = params;
+    const { clerkId, searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+    const skipPages = (page - 1) * pageSize;
 
     const user = await prisma.user.findUnique({
       where: { clerkId },
@@ -249,7 +263,7 @@ export async function getAllSavedQuestions(
           Object.values(sortOptions).length > 0
             ? sortOptions
             : { createdAt: 'desc' },
-        skip: (page - 1) * pageSize,
+        skip: skipPages,
         take: pageSize,
         include: {
           tags: {
@@ -284,13 +298,18 @@ export async function getAllSavedQuestions(
       },
     });
 
+    const isNext = totalCount > skipPages + savedQuestions.length;
+
     return {
       savedQuestions,
-      totalCount,
+      isNext,
     };
   } catch (error) {
-    console.error('Error in getAllSavedQuestions:', error);
-    return { savedQuestions: [], totalCount: 0 };
+    console.error('Error fetching questions:', error);
+    return {
+      savedQuestions: [],
+      isNext: false,
+    };
   }
 }
 
@@ -337,6 +356,8 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
     await connectDatabase();
     const { userId, page = 1, pageSize = 10 } = params;
 
+    const skipAmount = (page - 1) * pageSize;
+
     const totalQuestions = await prisma.question.count({
       where: {
         author: { id: userId },
@@ -347,6 +368,8 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
       where: {
         author: { id: userId },
       },
+      skip: skipAmount,
+      take: pageSize,
       include: {
         tags: {
           select: {
@@ -375,20 +398,29 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
 
     const sortedQuestions = sortByUpvotesAndViews(userQuestions);
 
+    const isNext = totalQuestions > skipAmount + userQuestions.length;
+
     return {
       questions: sortedQuestions,
-      totalQuestions,
+      isNext,
     };
   } catch (error) {
     console.error('Error fetching user questions:', error);
-    throw error;
+    return {
+      questions: [],
+      isNext: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
 export async function getAllUserAnswers(params: GetUserStatsParams) {
   try {
     await connectDatabase();
-    const { userId } = params;
+
+    const { userId, page = 1, pageSize = 10 } = params;
+
+    const skipAmount = (page - 1) * pageSize;
 
     const totalAnswers = await prisma.answer.count({
       where: { author: { id: userId } },
@@ -396,6 +428,8 @@ export async function getAllUserAnswers(params: GetUserStatsParams) {
 
     const userAnswers = await prisma.answer.findMany({
       where: { author: { id: userId } },
+      skip: skipAmount,
+      take: pageSize,
       include: {
         question: { select: { id: true, title: true } },
         author: {
@@ -408,12 +442,18 @@ export async function getAllUserAnswers(params: GetUserStatsParams) {
 
     const sortedAnswer = sortByUpvotesAndViews(userAnswers);
 
+    const isNext = totalAnswers > skipAmount + userAnswers.length;
+
     return {
       answers: sortedAnswer,
-      totalAnswers,
+      isNext,
     };
   } catch (error) {
-    console.error('Error fetching user Answers:', error);
-    throw error;
+    console.error('Error fetching user questions:', error);
+    return {
+      answers: [],
+      isNext: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }

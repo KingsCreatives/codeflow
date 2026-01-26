@@ -27,12 +27,14 @@ const Pagination = ({ pageNumber, isNext }: Props) => {
     router.push(newUrl);
   };
 
+  if(!isNext && pageNumber === 1) return null
+
   return (
     <div className='flex w-full items-center justify-center gap-2'>
       <Button
         disabled={pageNumber === 1}
         onClick={() => handleNavigation('prev')}
-        className='light-border-2 border btn min-h-9 flex items-center justify-center gap-2'
+        className='light-border-2 border btn min-h-9 flex items-center justify-center gap-2 cursor-pointer'
       >
         <p className='body-medium text-dark200_light800'>Prev</p>
       </Button>
@@ -42,7 +44,7 @@ const Pagination = ({ pageNumber, isNext }: Props) => {
       <Button
         disabled={!isNext}
         onClick={() => handleNavigation('next')}
-        className='light-border-2 border btn min-h-9 flex items-center justify-center gap-2'
+        className='light-border-2 border btn min-h-9 flex items-center justify-center gap-2 cursor-pointer'
       >
         <p className='body-medium text-dark200_light800'>Next</p>
       </Button>

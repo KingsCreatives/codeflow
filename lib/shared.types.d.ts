@@ -21,6 +21,7 @@ export type QuestionWithDetails = Prisma.QuestionGetPayload<
 export interface SavedQuestionsResponse {
   savedQuestions: QuestionWithDetails[];
   totalCount?: number;
+  isNext?: boolean;
 }
 
 export interface CreateAnswerParams {
