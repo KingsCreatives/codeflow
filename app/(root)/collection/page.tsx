@@ -8,6 +8,7 @@ import { formatNumber } from '@/lib/utils';
 import { getAllSavedQuestions } from '@/lib/actions/user.action';
 import { auth } from '@clerk/nextjs/server';
 import { SearchParamsProps } from '@/types';
+import Pagination from '@/components/shared/Pagination';
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = await auth();
@@ -15,10 +16,11 @@ export default async function Home({ searchParams }: SearchParamsProps) {
 
   if (!userId) return null;
 
-  const { savedQuestions, totalCount } = await getAllSavedQuestions({
+  const { savedQuestions, isNext } = await getAllSavedQuestions({
     clerkId: userId,
     searchQuery: resolvedSearchParams.q as string,
     filter: resolvedSearchParams.filter as string,
+    page: resolvedSearchParams.page ? +resolvedSearchParams.page : 1,
   });
 
   return (
@@ -71,6 +73,14 @@ export default async function Home({ searchParams }: SearchParamsProps) {
             linkTitle='Ask a Question'
           />
         )}
+      </div>
+      <div className='mt-10'>
+        <Pagination
+          pageNumber={
+            resolvedSearchParams?.page ? +resolvedSearchParams.page : 1
+          }
+          isNext={isNext!}
+        />
       </div>
     </>
   );

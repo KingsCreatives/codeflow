@@ -12,12 +12,15 @@ import {
   EditQuestionParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
+import next from 'next';
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     await connectDatabase();
 
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+    const skipPages = (page - 1) * pageSize;
 
     const query: Prisma.QuestionWhereInput = {};
     if (searchQuery) {
@@ -47,7 +50,8 @@ export async function getQuestions(params: GetQuestionsParams) {
 
     const questions = await prisma.question.findMany({
       where: query,
-      take: 10,
+      take: pageSize,
+      skip: skipPages,
       include: {
         tags: {
           select: {
@@ -78,11 +82,18 @@ export async function getQuestions(params: GetQuestionsParams) {
           : { createdAt: 'desc' },
     });
 
-    return { questions };
+    const totalQuestions = await prisma.question.count({
+      where: query,
+    });
+
+    const isNext = totalQuestions > skipPages + questions.length;
+
+    return { questions, isNext };
   } catch (error) {
     console.error('Error fetching questions:', error);
     return {
       questions: [],
+      isNext: false,
       error: error instanceof Error ? error.message : String(error),
     };
   }

@@ -2,20 +2,18 @@ import { getAllUsers } from '@/lib/actions/user.action';
 import Filter from '@/components/shared/Filter';
 import LocalSearchbar from '@/components/shared/search/LocalSearchbar';
 import { UserFilters } from '@/constants/filters';
-import NoResult from '@/components/shared/NoResult';
-import QuestionCard from '@/components/cards/QuestionCard';
-import Link from 'next/link';
-import { formatNumber } from '@/lib/utils';
-import { getQuestions } from '@/lib/actions/question.action';
 import { SearchParamsProps } from '@/types';
 import UserCard from '@/components/cards/UserCard';
+import Pagination from '@/components/shared/Pagination';
+import Link from 'next/link';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
   const resolvedSearchParams = await searchParams;
 
-  const result = await getAllUsers({
+  const { users: fetchedUsers = [], isNext } = await getAllUsers({
     searchQuery: resolvedSearchParams.q as string,
     filter: resolvedSearchParams.filter as string,
+    page: resolvedSearchParams.page ? +resolvedSearchParams.page : 1,
   });
 
   return (
@@ -37,8 +35,8 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
       </div>
 
       <section className='mt-12 flex flew-wrap gap-4'>
-        {result && result?.users.length > 0 ? (
-          result?.users.map((user) => <UserCard key={user.id} user={user} />)
+        {fetchedUsers && fetchedUsers?.length > 0 ? (
+          fetchedUsers?.map((user) => <UserCard key={user.id} user={user} />)
         ) : (
           <div className='paragraph-regular text-dark200_light800 mx-auto max-w-4xl'>
             <p>No users yet</p>
@@ -48,6 +46,14 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
           </div>
         )}
       </section>
+      <div className='mt-10'>
+        <Pagination
+          pageNumber={
+            resolvedSearchParams?.page ? +resolvedSearchParams.page : 1
+          }
+          isNext={isNext}
+        />
+      </div>
     </>
   );
 };

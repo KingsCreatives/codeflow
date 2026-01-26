@@ -65,7 +65,7 @@ const Page = async ({ params, searchParams }: URLProps) => {
           <SignedIn>
             {clerkId === userInfo.clerkId && (
               <Link href={`/profile/edit`} className='cursor'>
-                <Button className='cursor-pointer px-4 py-3 min-w-[175px] min-h-[46px]'>
+                <Button className='cursor-pointer px-4 py-3 min-w-43.75 min-h-11.5'>
                   Edit Profile
                 </Button>
               </Link>
@@ -79,7 +79,7 @@ const Page = async ({ params, searchParams }: URLProps) => {
       />
       <div className='mt-5 flex'>
         <Tabs defaultValue='top-posts' className='flex-1'>
-          <TabsList className='background-light800_dark400 gap-2.5 min-h-[42px] p-1 cursor-pointer'>
+          <TabsList className='background-light800_dark400 gap-2.5 min-h-10.5 p-1 cursor-pointer'>
             <TabsTrigger value='top-posts' className='tab'>
               Top Posts
             </TabsTrigger>

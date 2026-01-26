@@ -9,6 +9,7 @@ import {
   GetQuestionsByTagIdParams,
   QuestionWithDetails,
 } from '../shared.types';
+import { saveQuestion } from './user.action';
 
 export async function getUserFrequentTags(params: GetTopInteractedTagsParams) {
   try {
@@ -36,7 +37,9 @@ export async function getAllTags(params: GetAllTagsParams) {
   try {
     await connectDatabase();
 
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+    const skipPages = (page - 1) * pageSize;
 
     let sortOptions = {};
 
@@ -71,13 +74,24 @@ export async function getAllTags(params: GetAllTagsParams) {
           },
         },
       },
-      take: params.pageSize || 100,
+      take: pageSize,
+      skip: skipPages,
     });
 
-    return { tags };
+    const totalTags = await prisma.tag.count({
+      where: query,
+    });
+
+    const isNext = totalTags > skipPages + tags.length;
+
+    return { tags, isNext };
   } catch (error) {
-    console.log(error);
-    return { tags: [] };
+    console.error('Error fetching questions:', error);
+    return {
+      questions: [],
+      isNext: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -85,6 +99,8 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
   try {
     await connectDatabase();
     const { tagId, page = 1, pageSize = 10, searchQuery } = params;
+
+    const skipPages = (page - 1) * pageSize;
 
     const searchFilter = searchQuery
       ? {
@@ -104,7 +120,7 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
           ...searchFilter,
         },
         orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * pageSize,
+        skip: skipPages,
         take: pageSize,
         include: {
           tags: {
@@ -144,14 +160,20 @@ export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
       select: { name: true },
     });
 
+    const isNext = totalCount > savedQuestions.length + pageSize;
+
     return {
       savedQuestions,
-      totalCount,
       tagName: tagName ? tagName.name : 'Unknown Tag',
+      isNext,
     };
   } catch (error) {
-    console.log(error);
-    throw new Error('Failed to fetch questions by tag ID');
+    console.error('Error fetching questions:', error);
+    return {
+      savedQuestions: [],
+      isNext: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
