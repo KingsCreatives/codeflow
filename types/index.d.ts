@@ -1,4 +1,4 @@
-import { BADGE_CRITERIA } from "@/constants";
+import { BADGE_CRITERIA } from '@/constants';
 
 export interface SidebarLink {
   imgURL: string;
@@ -27,7 +27,7 @@ export interface Country {
 }
 
 export interface ParamsProps {
-  params: Promise<{ id: string }>; 
+  params: Promise<{ id: string }>;
 }
 
 export interface SearchParamsProps {
@@ -46,3 +46,10 @@ export interface BadgeCounts {
 }
 
 export type BadgeCriteriaType = keyof typeof BADGE_CRITERIA;
+
+export interface SearchGlobalResult {
+  title: string;
+  type: string;
+  id: string;
+  url: string; 
+}
