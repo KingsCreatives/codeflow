@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import GlobalFilters from './GlobalFilters';
+import { globalSearch } from '@/lib/actions/global.action';
 
 const GlobalResult = () => {
   const searchParams = useSearchParams();
@@ -17,8 +18,22 @@ const GlobalResult = () => {
   const type = searchParams.get('type');
 
   const renderLink = (type: string, id: string) => {
-    // Add logic to return specific paths based on type if needed
-    return '/';
+    switch (type) {
+      case 'question':
+        return `/question/${id}`;
+        break;
+      case 'answer':
+        return `/question/${id}`;
+        break;
+      case 'user':
+        return `/profile/${id}`;
+        break;
+      case 'tag':
+        return `/tags/${id}`;
+        break;
+      default:
+        return '/';
+    }
   };
 
   useEffect(() => {
@@ -27,9 +42,9 @@ const GlobalResult = () => {
       setIsLoading(true);
 
       try {
-        // TODO: Replace with actual API call
-        // const res = await globalSearch({ query: global, type });
-        // setResult(res);
+        const res = await globalSearch({ query: global, type });
+
+        setResult(JSON.parse(res));
       } catch (error) {
         console.error(error);
         throw error;
@@ -37,6 +52,9 @@ const GlobalResult = () => {
         setIsLoading(false);
       }
     };
+    if (global) {
+      fetchedResult();
+    }
   }, [global, type]);
 
   return (
@@ -48,7 +66,7 @@ const GlobalResult = () => {
       </div>
 
       {/* Separator: Updated to use composite class for correct theme switching */}
-      <div className='my-5 h-[1px] background-light700_dark300'>
+      <div className='my-5 h-px background-light700_dark300'>
         <div className='space-y-5'>
           <p className='text-dark400_light900 px-5 paragraph-semibold pt-5'>
             Top Match

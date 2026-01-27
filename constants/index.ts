@@ -83,3 +83,5 @@ export const BADGE_CRITERIA = {
     GOLD: 100000,
   },
 };
+
+export const SearchableTypes = ["question","answer","user","tag"]
