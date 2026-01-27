@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
 
@@ -35,11 +35,12 @@
   --container-max-width: 1400px;
 
   /* Font families */
-  --font-inter: "Inter", sans-serif;
-  --font-space-grotesk: "Space Grotesk", sans-serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
 
   /* Box shadows */
-  --shadow-light-100: 0px 12px 20px 0px rgba(184, 184, 184, 0.03),
+  --shadow-light-100:
+    0px 12px 20px 0px rgba(184, 184, 184, 0.03),
     0px 6px 12px 0px rgba(184, 184, 184, 0.02);
   --shadow-light-200: 10px 10px 20px 0px rgba(218, 213, 213, 0.1);
   --shadow-light-300: -10px 10px 20px 0px rgba(218, 213, 213, 0.1);
@@ -213,6 +214,7 @@ body {
   background-color: var(--primary-100);
 }
 
+
 .bg-primary-500 {
   background-color: var(--primary-500);
 }
@@ -225,11 +227,15 @@ body {
   background-color: var(--dark-300);
 }
 
+.bg-dark-400 {
+  background-color: var(--dark-400) !important;
+}
+
 .background-light850_dark100 {
   background-color: var(--light-850);
 }
 
-html.dark .background-light850_dark100 {
+.dark .background-light850_dark100 {
   background-color: var(--dark-100);
 }
 
@@ -237,7 +243,7 @@ html.dark .background-light850_dark100 {
   background-color: var(--light-900);
 }
 
-html.dark .background-light900_dark200 {
+.dark .background-light900_dark200 {
   background-color: var(--dark-200);
 }
 
@@ -245,7 +251,7 @@ html.dark .background-light900_dark200 {
   background-color: var(--light-900);
 }
 
-html.dark .background-light900_dark300 {
+.dark .background-light900_dark300 {
   background-color: var(--dark-300);
 }
 
@@ -253,7 +259,7 @@ html.dark .background-light900_dark300 {
   background-color: var(--light-800);
 }
 
-html.dark .background-light800_darkgradient {
+.dark .background-light800_darkgradient {
   background: linear-gradient(
     232deg,
     rgba(23, 28, 35, 0.41) 0%,
@@ -265,7 +271,7 @@ html.dark .background-light800_darkgradient {
   background-color: var(--light-800) !important;
 }
 
-html.dark .background-light800_dark400 {
+.dark .background-light800_dark400 {
   background-color: var(--dark-400) !important;
 }
 
@@ -273,7 +279,7 @@ html.dark .background-light800_dark400 {
   background-color: var(--light-700);
 }
 
-html.dark .background-light700_dark400 {
+.dark .background-light700_dark400 {
   background-color: var(--dark-400);
 }
 
@@ -281,7 +287,7 @@ html.dark .background-light700_dark400 {
   background-color: var(--light-700);
 }
 
-html.dark .background-light700_dark300 {
+.dark .background-light700_dark300 {
   background-color: var(--dark-300);
 }
 
@@ -289,7 +295,7 @@ html.dark .background-light700_dark300 {
   background-color: var(--light-800) !important;
 }
 
-html.dark .background-light800_dark300 {
+.dark .background-light800_dark300 {
   background-color: var(--dark-300) !important;
 }
 
@@ -306,8 +312,8 @@ html.dark .background-light800_dark300 {
   color: var(--light-900);
 }
 
-.text-light-500{
-  color: var(--light-500)
+.text-light-500 {
+  color: var(--light-500);
 }
 
 .text-dark100 {

@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { formUrlQuery, removeKeysFromQuery } from '@/lib/utils';
 
 const HomeFilters = () => {
-  // const active = 'frequent';
 
   const [active, setActive] = useState('');
 

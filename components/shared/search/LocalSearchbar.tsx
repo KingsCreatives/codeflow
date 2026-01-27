@@ -30,6 +30,7 @@ const LocalSearchbar = ({
   const [search, setSearch] = useState(query || '');
 
   useEffect(() => {
+    
     const debounceFn = setTimeout(() => {
       if (search) {
         const url = formUrlQuery({
