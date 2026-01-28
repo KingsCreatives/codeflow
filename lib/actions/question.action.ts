@@ -12,7 +12,6 @@ import {
   EditQuestionParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
-import next from 'next';
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
@@ -136,22 +135,26 @@ export async function createQuestion(params: CreateQuestionParams) {
         author: { connect: { id: author } },
         tags: { connect: tagDocuments },
       },
-      // include: {
-      //   tags: true,
-      //   author: {
-      //     select: {
-      //       id: true,
-      //       name: true,
-      //       username: true,
-      //       picture: true,
-      //     },
-      //   },
-      // },
     });
+
+    await prisma.user.update({
+      where: {id: author},
+      data: {
+        reputation: {increment: 5},
+        Interaction: {
+          create: {
+            action: "ask_question",
+            question: {connect: {id: question.id}},
+            tags: {connect : tagDocuments}
+          }
+        }
+      }
+    })
 
     revalidatePath(path);
     return { question };
   } catch (error) {
+    console.log(error)
     throw error;
   }
 }
@@ -208,49 +211,67 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
 
     const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
 
-    let data = {};
+    let updateQuery = {};
+    let authorRepChange = 0;
+    let voterRepChange = 0;
 
     if (hasupVoted) {
-      // User has upvoted → remove the upvote
-      data = {
-        upvotes: {
-          disconnect: { id: userId },
-        },
-      };
+      updateQuery = { upvotes: { disconnect: { id: userId } } };
+      authorRepChange = -10; 
+      voterRepChange = -1; 
     } else if (hasdownVoted) {
-      // User had downvoted → remove downvote and add upvote
-      data = {
-        downvotes: {
-          disconnect: { id: userId },
-        },
-        upvotes: {
-          connect: { id: userId },
-        },
+      
+      updateQuery = {
+        downvotes: { disconnect: { id: userId } },
+        upvotes: { connect: { id: userId } },
       };
+      authorRepChange = 12;
+      voterRepChange = 2;
     } else {
-      // User hasn't voted → add upvote
-      data = {
-        upvotes: {
-          connect: { id: userId },
-        },
-      };
+      updateQuery = { upvotes: { connect: { id: userId } } };
+      authorRepChange = 10;
+      voterRepChange = 1;
     }
 
-    const question = await prisma.question.update({
+    const question = await prisma.question.findUnique({
       where: { id: questionId },
-      data,
-      include: {
-        upvotes: true,
-        downvotes: true,
-      },
+      select: { authorId: true },
     });
 
-    if (!question) {
-      throw new Error('Question not found');
+    if (!question) throw new Error('Question not found');
+
+    if (question.authorId === userId) {
+      authorRepChange = 0;
+      voterRepChange = 0;
     }
 
+    await prisma.$transaction([
+      
+      prisma.question.update({
+        where: { id: questionId },
+        data: updateQuery,
+      }),
+
+      ...(voterRepChange !== 0
+        ? [
+            prisma.user.update({
+              where: { id: userId },
+              data: { reputation: { increment: voterRepChange } },
+            }),
+          ]
+        : []),
+
+      ...(authorRepChange !== 0
+        ? [
+            prisma.user.update({
+              where: { id: question.authorId },
+              data: { reputation: { increment: authorRepChange } },
+            }),
+          ]
+        : []),
+    ]);
+
     revalidatePath(path);
-    return question;
   } catch (error) {
     console.error('Error in upvoteQuestion:', error);
     throw error;
