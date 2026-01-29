@@ -368,6 +368,7 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
       where: {
         author: { id: userId },
       },
+      orderBy: {createdAt: 'desc', views: 'desc'},
       skip: skipAmount,
       take: pageSize,
       include: {
