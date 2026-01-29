@@ -14,6 +14,14 @@ export async function createAnswer(params: CreateAnswerParams) {
   try {
     await connectDatabase();
     const { content, question, author, path } = params;
+
+    const questionDetails = await prisma.question.findUnique({
+      where: {id: question},
+      include: {tags: true}
+    })
+
+    if(!questionDetails) throw new Error('Question not found')
+
     const answer = await prisma.answer.create({
       data: {
         content,
@@ -22,6 +30,21 @@ export async function createAnswer(params: CreateAnswerParams) {
         },
         author: {
           connect: { id: author },
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: author },
+      data: {
+        reputation: { increment: 10 },
+        Interaction: {
+          create: {
+            action: 'anwser',
+            answer: { connect: { id: answer.id } },
+            question: {connect: {id: question}},
+            tags: {connect : questionDetails.tags.map((tag) => ({id: tag.id}))}
+          },
         },
       },
     });
@@ -102,47 +125,74 @@ export async function getAllAnswers(params: GetAnswersParams) {
 export async function upvoteAnswer(params: AnswerVoteParams) {
   try {
     await connectDatabase();
-    const { answerId, userId, hasdownVoted, hasupVoted, path } = params;
-    let data = {};
+
+    const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
+
+    let updateQuery = {};
+    let authorRepChange = 0;
+    let voterRepChange = 0;
 
     if (hasupVoted) {
-      data = {
-        upvotes: {
-          disconnect: { id: userId },
-        },
-      };
+      updateQuery = { upvotes: { disconnect: { id: userId } } };
+      authorRepChange = -10;
+      voterRepChange = -2; 
     } else if (hasdownVoted) {
-      data = {
-        downvotes: {
-          disconnect: { id: userId },
-        },
-        upvotes: {
-          connect: { id: userId },
-        },
+      updateQuery = {
+        downvotes: { disconnect: { id: userId } },
+        upvotes: { connect: { id: userId } },
       };
+      
+      authorRepChange = 12;
+      
+      voterRepChange = 3;
     } else {
-      data = {
-        upvotes: {
-          connect: { id: userId },
-        },
-      };
+      updateQuery = { upvotes: { connect: { id: userId } } };
+      authorRepChange = 10;
+      voterRepChange = 2; 
     }
 
-    const answer = await prisma.answer.update({
+    const answer = await prisma.answer.findUnique({
       where: { id: answerId },
-      data,
-      include: {
-        upvotes: true,
-        downvotes: true,
-      },
+      select: { authorId: true },
     });
 
-    if (!answer) {
-      throw new Error('Answer not found');
+    if (!answer) throw new Error('Answer not found');
+
+    if (answer.authorId === userId) {
+      authorRepChange = 0;
+      voterRepChange = 0;
     }
 
+    await prisma.$transaction([
+      prisma.answer.update({
+        where: { id: answerId },
+        data: updateQuery,
+      }),
+
+      ...(voterRepChange !== 0
+        ? [
+            prisma.user.update({
+              where: { id: userId },
+              data: { reputation: { increment: voterRepChange } },
+            }),
+          ]
+        : []),
+
+      ...(authorRepChange !== 0
+        ? [
+            prisma.user.update({
+              where: { id: answer.authorId },
+              data: { reputation: { increment: authorRepChange } },
+            }),
+          ]
+        : []),
+    ]);
+
     revalidatePath(path);
-  } catch (error) {}
+  } catch (error) {
+    console.error('Error in upvoteAnswer:', error);
+    throw error;
+  }
 }
 
 export async function downvoteAnswer(params: AnswerVoteParams) {
@@ -151,43 +201,61 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 
     const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
 
-    let data = {};
+    let updateQuery = {};
+    let authorRepChange = 0;
+    let voterRepChange = 0;
 
     if (hasdownVoted) {
-      data = {
-        downvotes: {
-          disconnect: { id: userId },
-        },
-      };
+      updateQuery = { downvotes: { disconnect: { id: userId } } };
+      authorRepChange = 2; 
+      voterRepChange = 1; 
     } else if (hasupVoted) {
-      data = {
-        upvotes: {
-          disconnect: { id: userId },
-        },
-        downvotes: {
-          connect: { id: userId },
-        },
+      updateQuery = {
+        upvotes: { disconnect: { id: userId } },
+        downvotes: { connect: { id: userId } },
       };
+    
+      authorRepChange = -12; 
+      
+      voterRepChange = -3;   
     } else {
-      data = {
-        downvotes: {
-          connect: { id: userId },
-        },
-      };
+      updateQuery = { downvotes: { connect: { id: userId } } };
+      authorRepChange = -2;
+      voterRepChange = -1;
     }
 
-    const answer = await prisma.answer.update({
+    const answer = await prisma.answer.findUnique({
       where: { id: answerId },
-      data,
-      include: {
-        upvotes: true,
-        downvotes: true,
-      },
+      select: { authorId: true }
     });
 
-    if (!answer) {
-      throw new Error('Answer not found');
+    if (!answer) throw new Error("Answer not found");
+
+    if (answer.authorId === userId) {
+      authorRepChange = 0;
+      voterRepChange = 0;
     }
+
+    await prisma.$transaction([
+      prisma.answer.update({
+        where: { id: answerId },
+        data: updateQuery,
+      }),
+      
+      ...(voterRepChange !== 0 ? [
+        prisma.user.update({
+          where: { id: userId },
+          data: { reputation: { increment: voterRepChange } },
+        })
+      ] : []),
+
+      ...(authorRepChange !== 0 ? [
+        prisma.user.update({
+          where: { id: answer.authorId },
+          data: { reputation: { increment: authorRepChange } },
+        })
+      ] : []),
+    ]);
 
     revalidatePath(path);
   } catch (error) {

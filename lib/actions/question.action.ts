@@ -138,23 +138,23 @@ export async function createQuestion(params: CreateQuestionParams) {
     });
 
     await prisma.user.update({
-      where: {id: author},
+      where: { id: author },
       data: {
-        reputation: {increment: 5},
+        reputation: { increment: 5 },
         Interaction: {
           create: {
-            action: "ask_question",
-            question: {connect: {id: question.id}},
-            tags: {connect : tagDocuments}
-          }
-        }
-      }
-    })
+            action: 'ask_question',
+            question: { connect: { id: question.id } },
+            tags: { connect: tagDocuments },
+          },
+        },
+      },
+    });
 
     revalidatePath(path);
     return { question };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw error;
   }
 }
@@ -217,10 +217,9 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
 
     if (hasupVoted) {
       updateQuery = { upvotes: { disconnect: { id: userId } } };
-      authorRepChange = -10; 
-      voterRepChange = -1; 
+      authorRepChange = -10;
+      voterRepChange = -1;
     } else if (hasdownVoted) {
-      
       updateQuery = {
         downvotes: { disconnect: { id: userId } },
         upvotes: { connect: { id: userId } },
@@ -246,7 +245,6 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
     }
 
     await prisma.$transaction([
-      
       prisma.question.update({
         where: { id: questionId },
         data: updateQuery,
@@ -284,49 +282,67 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
 
     const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
 
-    let data = {};
+    let updateQuery = {};
+    let authorRepChange = 0;
+    let voterRepChange = 0;
 
     if (hasdownVoted) {
-      //  User has already downvoted → remove the downvote
-      data = {
-        downvotes: {
-          disconnect: { id: userId },
-        },
-      };
+      updateQuery = { downvotes: { disconnect: { id: userId } } };
+      authorRepChange = 2;
+      voterRepChange = 1;
     } else if (hasupVoted) {
-      // User had upvoted → remove upvote, add downvote
-      data = {
-        upvotes: {
-          disconnect: { id: userId },
-        },
-        downvotes: {
-          connect: { id: userId },
-        },
+      updateQuery = {
+        upvotes: { disconnect: { id: userId } },
+        downvotes: { connect: { id: userId } },
       };
+
+      authorRepChange = -12;
+
+      voterRepChange = -2;
     } else {
-      //  User hasn't voted → just add a downvote
-      data = {
-        downvotes: {
-          connect: { id: userId },
-        },
-      };
+      updateQuery = { downvotes: { connect: { id: userId } } };
+      authorRepChange = -2;
+      voterRepChange = -1; 
     }
 
-    const question = await prisma.question.update({
+    const question = await prisma.question.findUnique({
       where: { id: questionId },
-      data,
-      include: {
-        upvotes: true,
-        downvotes: true,
-      },
+      select: { authorId: true },
     });
 
-    if (!question) {
-      throw new Error('Question not found');
+    if (!question) throw new Error('Question not found');
+
+    if (question.authorId === userId) {
+      authorRepChange = 0;
+      voterRepChange = 0;
     }
 
+    await prisma.$transaction([
+      prisma.question.update({
+        where: { id: questionId },
+        data: updateQuery,
+      }),
+
+      ...(voterRepChange !== 0
+        ? [
+            prisma.user.update({
+              where: { id: userId },
+              data: { reputation: { increment: voterRepChange } },
+            }),
+          ]
+        : []),
+
+      ...(authorRepChange !== 0
+        ? [
+            prisma.user.update({
+              where: { id: question.authorId },
+              data: { reputation: { increment: authorRepChange } },
+            }),
+          ]
+        : []),
+    ]);
+
     revalidatePath(path);
-    return question;
   } catch (error) {
     console.error('Error in downvoteQuestion:', error);
     throw error;
