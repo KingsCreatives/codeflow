@@ -3,6 +3,8 @@
 import { connectDatabase } from '../db/dbcheck';
 import { prisma } from '@/lib/db/client';
 import { Prisma } from '@prisma/client';
+import { assignBadges } from '../utils';
+import { BADGE_CRITERIA } from '@/constants';
 
 import {
   CreateUserParams,
@@ -16,6 +18,7 @@ import {
 import { revalidatePath } from 'next/cache';
 import { QuestionWithDetails, SavedQuestionsResponse } from '../shared.types';
 import { sortByUpvotesAndViews } from '../utils';
+import { upvoteAnswer } from './answer.action';
 
 export async function getUserById(params: any) {
   try {
@@ -340,10 +343,52 @@ export async function getUserInfo(params: GetUserStatsParams) {
       },
     });
 
+    const questionStats = await prisma.question.findMany({
+      where: { authorId: user.id },
+      select: {
+        views: true,
+        _count: {
+          select: { upvotes: true },
+        },
+      },
+    });
+
+    const answerStats = await prisma.answer.findMany({
+      where: { authorId: user.id },
+      select: {
+        _count: {
+          select: { upvotes: true },
+        },
+      },
+    });
+
+    const questionUpvotes = questionStats.reduce(
+      (acc, curr) => acc + curr._count.upvotes,
+      0,
+    );
+    const questionViews = questionStats.reduce(
+      (acc, curr) => acc + curr.views,
+      0,
+    );
+    const answerUpvotes = answerStats.reduce((acc,curr) => acc + curr._count.upvotes, 0)
+
+    const badgeCounts = assignBadges({
+      criteria: [
+        { type: 'QUESTION_COUNT', count: totalQuestions },
+        { type: 'ANSWER_COUNT', count: totalAnswers },
+        { type: 'QUESTION_UPVOTES', count: questionUpvotes },
+        { type: 'ANSWER_UPVOTES', count: answerUpvotes },
+        { type: 'TOTAL_VIEWS', count: questionViews },
+      ],
+    });
+
     return {
       ...user,
       totalQuestions,
       totalAnswers,
+      totalUpvotes: questionUpvotes + answerUpvotes,
+      totalViews: questionViews,
+      badgeCounts
     };
   } catch (error) {
     console.error('Error fetching user info:', error);
@@ -368,7 +413,7 @@ export async function getAllUserQuestions(params: GetUserStatsParams) {
       where: {
         author: { id: userId },
       },
-      orderBy: {createdAt: 'desc', views: 'desc'},
+      orderBy: { createdAt: 'desc', views: 'desc' },
       skip: skipAmount,
       take: pageSize,
       include: {

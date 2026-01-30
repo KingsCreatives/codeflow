@@ -15,10 +15,9 @@ import UserAnswersTab from '@/components/shared/UserAnswersTab';
 
 const Page = async ({ params, searchParams }: URLProps) => {
   const { id } = await params;
+
   const resolvedSearchParams = await searchParams;
-
   const userInfo = await getUserInfo({ userId: id });
-
   const { userId: clerkId } = await auth();
 
   return (
@@ -76,25 +75,42 @@ const Page = async ({ params, searchParams }: URLProps) => {
       <UserStats
         totalQuestions={userInfo.totalQuestions}
         totalAnswers={userInfo.totalAnswers}
+        badges={userInfo.badgeCounts}
       />
-      <div className='mt-5 flex'>
+      <div className='mt-10 flex gap-10'>
+        {' '}
         <Tabs defaultValue='top-posts' className='flex-1'>
-          <TabsList className='background-light800_dark400 gap-2.5 min-h-10.5 p-1 cursor-pointer'>
-            <TabsTrigger value='top-posts' className='tab'>
+          <TabsList className='background-light800_dark400 min-h-10.5 p-1'>
+            <TabsTrigger
+              value='top-posts'
+              className='tab w-full cursor-pointer hover:opacity-70'
+            >
+              {' '}
               Top Posts
             </TabsTrigger>
-            <TabsTrigger value='answers' className='tab'>
+            <TabsTrigger
+              value='answers'
+              className='tab w-full cursor-pointer hover:opacity-70'
+            >
               Answers
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='top-posts'>
+
+          <TabsContent
+            value='top-posts'
+            className='mt-5 flex w-full flex-col gap-6'
+          >
             <UserQuestionsTab
               userId={userInfo.id}
               clerkId={userInfo.clerkId}
               searchParams={searchParams}
             />
           </TabsContent>
-          <TabsContent value='answers' className='flex w-full flex-col gap-6'>
+
+          <TabsContent
+            value='answers'
+            className='mt-5 flex w-full flex-col gap-6'
+          >
             <UserAnswersTab
               userId={userInfo.id}
               clerkId={userInfo.clerkId}
