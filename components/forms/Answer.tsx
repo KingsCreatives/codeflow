@@ -68,26 +68,38 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
     }
   };
 
-  const generateAIAnswer = async () => {
-    if (!authorId) return;
+  const handleGenerateAI = async () => {
+    if (!question) return;
+
     setIsSubmitingAIAnswer(true);
+
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/chatgpt`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
         {
           method: 'POST',
-          body: JSON.stringify({ question }),
+          body: JSON.stringify({ question }), 
         },
       );
 
-      const returnedAnswer = await res.json()
-      console.log(returnedAnswer.reply)
+      const data = await response.json();
+
+      // if (response.ok && data.reply) {
+      //   if (editorRef.current) {
+      //     editorRef.current.setContent(data.reply);
+      //   }
+      //   form.setValue('answer', data.reply);
+      // } else {
+      //   console.error('AI Error:', data.error);
+      // }
     } catch (error) {
-      console.log(error);
+      console.error('Request failed:', error);
     } finally {
       setIsSubmitingAIAnswer(false);
     }
   };
+
+
 
   return (
     <div>
@@ -98,7 +110,7 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
         <Button
           className='flex items-center btn light-border-2 gap-1.5 rounded-md px-4 py-2.5 text-primary500 shadow-none dark:text-primary-500 max-w-[50vw]'
           onClick={() => {
-            generateAIAnswer;
+            handleGenerateAI
           }}
         >
           <Image
@@ -188,6 +200,6 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
       </Form>
     </div>
   );
-};
+};;
 
 export default Answer;
