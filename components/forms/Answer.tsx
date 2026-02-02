@@ -18,6 +18,7 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 import { createAnswer } from '@/lib/actions/answer.action';
 import { usePathname } from 'next/navigation';
+import { parse } from 'marked';
 
 interface AnswerProps {
   question: string;
@@ -78,28 +79,24 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
         {
           method: 'POST',
-          body: JSON.stringify({ question }), 
+          body: JSON.stringify({ question }),
         },
       );
 
       const data = await response.json();
 
-      // if (response.ok && data.reply) {
-      //   if (editorRef.current) {
-      //     editorRef.current.setContent(data.reply);
-      //   }
-      //   form.setValue('answer', data.reply);
-      // } else {
-      //   console.error('AI Error:', data.error);
-      // }
+      const formattedHTML = await parse(data.reply);
+
+      if (editorRef.current) {
+        const editor = editorRef.current as any;
+        editor.setContent(formattedHTML);
+      }
     } catch (error) {
       console.error('Request failed:', error);
     } finally {
       setIsSubmitingAIAnswer(false);
     }
   };
-
-
 
   return (
     <div>
@@ -109,18 +106,22 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
         </h4>
         <Button
           className='flex items-center btn light-border-2 gap-1.5 rounded-md px-4 py-2.5 text-primary500 shadow-none dark:text-primary-500 max-w-[50vw]'
-          onClick={() => {
-            handleGenerateAI
-          }}
+          onClick={() => handleGenerateAI()}
         >
-          <Image
-            src='/assets/icons/stars.svg'
-            alt='star'
-            width={12}
-            height={12}
-            className='object-contain'
-          />
-          Answer with AI
+          {isSubmittingAIAnswer ? (
+            <>Generating AI answer ...</>
+          ) : (
+            <>
+              <Image
+                src='/assets/icons/stars.svg'
+                alt='star'
+                width={12}
+                height={12}
+                className='object-contain'
+              />
+              Answer with AI
+            </>
+          )}
         </Button>
       </div>
       <Form {...form}>
@@ -135,7 +136,7 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
               <FormItem className='flex w-full flex-col gap-3'>
                 <FormControl className='mt-3.5'>
                   <Editor
-                    key={theme} // Force re-mount on theme change
+                    key={theme}
                     apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                     onInit={(_evt, editor) => {
                       // @ts-ignore
@@ -200,6 +201,6 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
       </Form>
     </div>
   );
-};;
+};
 
 export default Answer;
