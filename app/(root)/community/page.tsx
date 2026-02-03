@@ -6,6 +6,7 @@ import { SearchParamsProps } from '@/types';
 import UserCard from '@/components/cards/UserCard';
 import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';
+import Loading from './loading';
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
   const resolvedSearchParams = await searchParams;
