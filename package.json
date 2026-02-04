@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",
     "@clerk/nextjs": "^6.20.2",
@@ -45,6 +48,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.2.0",
     "@types/marked": "^5.0.2",
     "@types/node": "^20.17.50",
     "@types/prismjs": "^1.26.5",
