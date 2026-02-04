@@ -19,6 +19,7 @@ import { Textarea } from '../ui/textarea';
 import { ProfileSchema } from '@/lib/validations';
 import { usePathname, useRouter } from 'next/navigation';
 import { updateUser } from '@/lib/actions/user.action';
+import { toast } from 'sonner';
 
 interface Props {
   clerkId: string;
@@ -61,6 +62,7 @@ const Profile = ({ clerkId, user }: Props) => {
         },
         path: pathname,
       });
+      toast.success('Profile updated successfully');
       router.back();
     } finally {
       setIsSubmitting(false);
