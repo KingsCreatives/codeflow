@@ -24,6 +24,7 @@ import { Badge } from '../ui/badge';
 import Image from 'next/image';
 import { createQuestion, editQuestion } from '@/lib/actions/question.action';
 import { useTheme } from '@/context/ThemeProvider';
+import { toast } from 'sonner';
 
 interface Props {
   type?: string;
@@ -76,6 +77,7 @@ const Question = ({ type, userId, questionDetails }: Props) => {
           content: values.explanation,
           path: pathname,
         });
+        toast.success('Question edited successfully');
         router.push(`/question/${parsedQuestion.id}`);
       } else {
         await createQuestion({
@@ -85,9 +87,11 @@ const Question = ({ type, userId, questionDetails }: Props) => {
           author: userId,
           path: pathname,
         });
+        toast.success('Question posted!');
         router.push('/');
       }
     } catch (error) {
+      toast.error('Error creating question');
       console.error('Error creating question:', error);
     } finally {
       setIsSubmiting(false);
@@ -96,7 +100,7 @@ const Question = ({ type, userId, questionDetails }: Props) => {
 
   const handleInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    field: any
+    field: any,
   ) => {
     if (e.key === 'Enter' && field.name === 'tags') {
       e.preventDefault();

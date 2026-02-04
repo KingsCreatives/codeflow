@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import { usePathname , useRouter} from 'next/navigation';
 import { deleteAnswer } from '@/lib/actions/answer.action';
+import { toast } from 'sonner';
 
 interface EditDeleteProps {
   type: string;
@@ -21,11 +22,13 @@ const EditDeleteAction = ({ type, itemId }: EditDeleteProps) => {
   const handleDelete = async () => {
     if (type === 'Question') {
       await deleteQuestion({ questionId: JSON.parse(itemId), path: pathname });
+      toast.success("Question deleted")
     } else if (type === 'Answer') {
       await deleteAnswer({
         answerId: JSON.parse(itemId),
         path: pathname,
       });
+      toast.success("Answer deleted")
     }
   };
   return (

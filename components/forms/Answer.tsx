@@ -19,6 +19,7 @@ import Image from 'next/image';
 import { createAnswer } from '@/lib/actions/answer.action';
 import { usePathname } from 'next/navigation';
 import { parse } from 'marked';
+import { toast } from 'sonner';
 
 interface AnswerProps {
   question: string;
@@ -53,9 +54,13 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
       });
 
       if (result?.error) {
-        console.error('Server Error:', result.error);
+         toast.error("Error", {description: "Could not post answer"})
         return;
       }
+
+      toast.success("Answer Posted", {
+        description: "Your answer has been added successfully"
+      })
 
       form.reset();
       if (editorRef.current) {
@@ -63,6 +68,7 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
         editor.setContent('');
       }
     } catch (error) {
+      toast.error("Something went wrong")
       console.error('Client Error:', error);
     } finally {
       setIsSubmiting(false);
