@@ -10,6 +10,11 @@ import { formatNumber } from '@/lib/utils';
 import { getQuestions } from '@/lib/actions/question.action';
 import { SearchParamsProps } from '@/types';
 import Pagination from '@/components/shared/Pagination';
+import { Metadata } from 'next';
+
+export const medata: Metadata = {
+  title: "Home | Codeflow",
+}
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const resolvedSearchParams = await searchParams;

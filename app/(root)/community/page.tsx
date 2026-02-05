@@ -6,7 +6,11 @@ import { SearchParamsProps } from '@/types';
 import UserCard from '@/components/cards/UserCard';
 import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';
-import Loading from './loading';
+import { Metadata } from 'next';
+
+export const medata: Metadata = {
+  title: 'Community | Codeflow',
+};
 
 const Page = async ({ searchParams }: SearchParamsProps) => {
   const resolvedSearchParams = await searchParams;
@@ -35,7 +39,7 @@ const Page = async ({ searchParams }: SearchParamsProps) => {
         />
       </div>
 
-      <section className='mt-12 flex flew-wrap gap-4'>
+      <section className='mt-12 flex flex-wrap gap-4'>
         {fetchedUsers && fetchedUsers?.length > 0 ? (
           fetchedUsers?.map((user) => <UserCard key={user.id} user={user} />)
         ) : (
