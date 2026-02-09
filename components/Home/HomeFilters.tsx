@@ -44,9 +44,9 @@ const HomeFilters = () => {
         <Button
           key={item.value}
           onClick={() => handleTypeClick(item.value)}
-          className={`text-dark400_light700 background-light800_dark300 body-medium rounded-lg px-6 py-4 capitalize shadow-none transition-transform duration-150 hover:scale-105 cursor-pointer ${
+          className={` body-medium rounded-lg px-6 py-4 capitalize shadow-none transition-transform duration-150 hover:scale-105 cursor-pointer text-dark400_light700 background-light800_dark300 ${
             active === item.value
-              ? 'bg-orange-400 text-zinc-50 dark:bg-orange-500'
+              ? 'bg-primary-100 text-primary-500 hover:bg-primary-100 '
               : 'text-light-500'
           }`}
         >

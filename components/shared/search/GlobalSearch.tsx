@@ -58,7 +58,7 @@ const GlobalSearch = () => {
       className='relative w-full max-w-150 max-lg:hidden'
       ref={searchContainerRef}
     >
-      <div className='background-light800_darkgradient relative flex min-h-14 grow items-center gap-1 rounded-xl px-4 shadow-sm border border-transparent focus-within:border-primary-500 focus-within:shadow-md transition-all'>
+      <div className='background-light800_darkgradient relative flex min-h-14 grow items-center gap-1 rounded-xl px-4 shadow-sm border border-transparent  focus-within:shadow-md transition-all'>
         <Image
           src='/assets/icons/search.svg'
           alt='search'
@@ -70,7 +70,7 @@ const GlobalSearch = () => {
           type='text'
           placeholder='Search globally...'
           value={search}
-          className='paragraph-regular no-focus placeholder text-dark400_light700 border-none bg-transparent shadow-none outline-none'
+          className='paragraph-regular no-focus placeholder text-dark400_light700 border-none shadow-none outline-none bg-transparent'
           onChange={(e) => {
             setSearch(e.target.value);
             if (!isOpen && e.target.value !== '') setIsOpen(true);

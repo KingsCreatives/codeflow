@@ -7,6 +7,11 @@ const TOTAL_USERS = 50;
 const TOTAL_QUESTIONS = 200;
 const TOTAL_ANSWERS = 400;
 
+const REAL_CLERK_IDS = [
+  'user_36ZpxYRfl0toaH5kThuPIfOl8yO',
+  'user_36OdMjJtowQDIXhZz46K66zznFV',
+];
+
 const TAGS_LIST = [
   'react',
   'next.js',
@@ -51,9 +56,25 @@ async function main() {
     console.log(`Cleared ${model}s`);
   }
 
+  console.log(
+    `Generating users (Including ${REAL_CLERK_IDS.length} real admins)...`,
+  );
 
-  console.log(`Generating ${TOTAL_USERS} users...`);
-  const usersData = Array.from({ length: TOTAL_USERS }).map((_, i) => ({
+  const realUsersData = REAL_CLERK_IDS.map((clerkId, index) => ({
+    clerkId,
+    name: index === 0 ? 'Admin User 1' : 'Admin User 2',
+    username: index === 0 ? 'admin_one' : 'admin_two',
+    email: `admin${index + 1}@example.com`,
+    password: 'password123',
+    bio: 'I am a real system administrator and developer.',
+    picture: faker.image.avatar(),
+    location: 'Accra, Ghana',
+    reputation: 1000,
+    joinedAt: new Date(),
+  }));
+
+  const remainingUsers = TOTAL_USERS - REAL_CLERK_IDS.length;
+  const fakeUsersData = Array.from({ length: remainingUsers }).map((_, i) => ({
     clerkId: `user_${faker.string.uuid()}`,
     name: faker.person.fullName(),
     username: faker.internet.username() + i,
@@ -66,7 +87,9 @@ async function main() {
     joinedAt: faker.date.past({ years: 5 }),
   }));
 
-  await prisma.user.createMany({ data: usersData });
+  const allUsersData = [...realUsersData, ...fakeUsersData];
+  await prisma.user.createMany({ data: allUsersData });
+
   const allUsers = await prisma.user.findMany({ select: { id: true } });
   console.log(`✅ Created ${allUsers.length} users`);
 
@@ -81,7 +104,6 @@ async function main() {
   const allTags = await prisma.tag.findMany({ select: { id: true } });
 
   console.log(`Generating ${TOTAL_QUESTIONS} questions (Sequentially)...`);
-
   const allQuestions = [];
 
   for (let i = 0; i < TOTAL_QUESTIONS; i++) {
@@ -89,6 +111,7 @@ async function main() {
       from: '2022-01-01',
       to: new Date(),
     });
+
     const author = allUsers[Math.floor(Math.random() * allUsers.length)];
     const tech = TAGS_LIST[Math.floor(Math.random() * TAGS_LIST.length)];
     const title = `How to ${faker.hacker.verb()} ${faker.hacker.noun()} in ${tech}?`;
@@ -113,7 +136,6 @@ async function main() {
     });
 
     allQuestions.push(question);
-
     if (i % 10 === 0) process.stdout.write('.');
   }
   console.log(`\n✅ Created ${allQuestions.length} questions`);
@@ -138,7 +160,6 @@ async function main() {
     });
   }
 
-
   await prisma.answer.createMany({ data: answersToCreate });
   const allAnswers = await prisma.answer.findMany({ select: { id: true } });
   console.log(`✅ Created ${allAnswers.length} answers`);
@@ -146,7 +167,6 @@ async function main() {
   console.log('Simulating Votes...');
 
   for (const q of allQuestions) {
-
     if (Math.random() > 0.7) {
       const voters = allUsers
         .sort(() => 0.5 - Math.random())

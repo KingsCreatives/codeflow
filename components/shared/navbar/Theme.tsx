@@ -18,7 +18,7 @@ const Theme = () => {
   return (
     <Menubar className="relative border-none bg-transparent shadow-none">
       <MenubarMenu>
-        <MenubarTrigger className="cursor-pointer focus:bg-light900 dark:focus:bg-dark200">
+        <MenubarTrigger className="cursor-pointer focus:bg-light900 dark:focus:bg-dark200 ">
           <Image
             src={
               theme === "dark"
@@ -31,11 +31,11 @@ const Theme = () => {
             className="active-theme"
           />
         </MenubarTrigger>
-        <MenubarContent className="absolute right-[-3rem] mt-3 min-w-[120px] rounded border py-2 dark:border-dark400 dark:bg-dark300">
+        <MenubarContent className="absolute -right-12 mt-3 min-w-30 rounded border py-2 dark:border-dark-400 dark:bg-dark-300 bg-light-900">
           {themes.map((item) => (
             <MenubarItem
               key={item.value}
-              className="flex items-center gap-4 px-2.5 py-2 dark:focus:bg-dark-400"
+              className="flex items-center gap-4 px-2.5 py-2 dark:focus:bg-dark-400 cursor-pointer"
               onClick={() => setTheme(item.value)}
             >
               <Image

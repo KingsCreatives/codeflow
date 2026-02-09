@@ -4,22 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Base theme variables */
 :root {
-  /* Base colors */
-
-  /* Primary colors */
   --primary-500: #ff7000;
   --primary-100: #fff1e6;
 
-  /* Dark theme colors */
   --dark-100: #000000;
   --dark-200: #0f1117;
   --dark-300: #151821;
   --dark-400: #212734;
   --dark-500: #101012;
 
-  /* Light theme colors */
   --light-900: #ffffff;
   --light-800: #f4f6f8;
   --light-850: #fdfdfd;
@@ -27,18 +21,14 @@
   --light-500: #7b8ec8;
   --light-400: #858ead;
 
-  /* Accent colors */
   --accent-blue: #1da1f2;
 
-  /* Container settings */
   --container-padding: 2rem;
   --container-max-width: 1400px;
 
-  /* Font families */
   --font-inter: 'Inter', sans-serif;
   --font-space-grotesk: 'Space Grotesk', sans-serif;
 
-  /* Box shadows */
   --shadow-light-100:
     0px 12px 20px 0px rgba(184, 184, 184, 0.03),
     0px 6px 12px 0px rgba(184, 184, 184, 0.02);
@@ -46,6 +36,7 @@
   --shadow-light-300: -10px 10px 20px 0px rgba(218, 213, 213, 0.1);
   --shadow-dark-100: 0px 2px 10px 0px rgba(46, 52, 56, 0.1);
   --shadow-dark-200: 2px 0px 20px 0px rgba(39, 36, 36, 0.04);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -81,15 +72,11 @@
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
-/* Dark mode theme variables */
-
-/* Global styles */
 body {
   background-color: var(--background);
   font-family: var(--font-inter);
 }
 
-/* Typography styles */
 .h1-bold {
   font-size: 30px;
   font-weight: 700;
@@ -205,7 +192,6 @@ body {
   line-height: 13px;
 }
 
-/* Background theme utilities */
 .bg-dark200 {
   background-color: var(--dark-200);
 }
@@ -213,7 +199,6 @@ body {
 .bg-primary-100 {
   background-color: var(--primary-100);
 }
-
 
 .bg-primary-500 {
   background-color: var(--primary-500);
@@ -299,7 +284,6 @@ body {
   background-color: var(--dark-300) !important;
 }
 
-/* Text theme utilities */
 .text-primary500 {
   color: var(--primary-500);
 }
@@ -416,7 +400,6 @@ body {
   color: var(--light-900) !important;
 }
 
-/* Border utilities */
 .light-border {
   border-color: var(--light-800);
 }
@@ -436,7 +419,7 @@ body {
 .border-dark400 {
   border-color: var(--dark-400) !important;
 }
-/* Placeholder utilities */
+
 .placeholder::placeholder {
   color: var(--light-400);
 }
@@ -445,7 +428,6 @@ body {
   color: var(--light-500);
 }
 
-/* Invert colors utility */
 .invert-colors {
   filter: invert(1);
 }
@@ -454,7 +436,6 @@ body {
   filter: invert(0);
 }
 
-/* Shadow utilities */
 .shadow-light100_dark100 {
   box-shadow: var(--shadow-light-100);
 }
@@ -471,7 +452,6 @@ body {
   box-shadow: none;
 }
 
-/* Component styling */
 .card-wrapper {
   background-color: var(--light-900);
   box-shadow: var(--shadow-light-100);
@@ -520,7 +500,6 @@ body {
   background-color: var(--dark-400);
 }
 
-/* Layout utilities */
 .flex-center {
   display: flex;
   justify-content: center;
@@ -539,7 +518,6 @@ body {
   align-items: center;
 }
 
-/* No focus outline */
 .no-focus {
   outline: none;
 }
@@ -549,7 +527,6 @@ body {
   box-shadow: none;
 }
 
-/* Gradients */
 .primary-gradient {
   background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
 }
@@ -577,7 +554,6 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
   height: 3px;
@@ -597,7 +573,6 @@ body {
   background: #555;
 }
 
-/* Markdown styling */
 .markdown {
   max-width: 100%;
 }
@@ -636,35 +611,30 @@ body {
   color: inherit !important;
 }
 
-/* Active theme indicator */
 .active-theme {
   filter: invert(53%) sepia(98%) saturate(3332%) hue-rotate(0deg)
     brightness(104%) contrast(106%) !important;
 }
 
-/* Hash span for anchor links */
 .hash-span {
   margin-top: -140px;
   padding-bottom: 140px;
   display: block;
 }
 
-/* Hide scrollbar utility classes */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Clerk customization */
 .cl-internal-b3fm6y {
   background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
 }
 
-/* For modern browsers that support color scheme */
 @supports (color-scheme: dark light) {
   :root {
     color-scheme: light dark;
@@ -707,6 +677,21 @@ body {
 }
 
 @theme inline {
+  --color-primary-500: var(--primary-500);
+  --color-primary-100: var(--primary-100);
+
+  --color-dark-100: var(--dark-100);
+  --color-dark-200: var(--dark-200);
+  --color-dark-300: var(--dark-300);
+  --color-dark-400: var(--dark-400);
+  --color-dark-500: var(--dark-500);
+
+  --color-light-900: var(--light-900);
+  --color-light-800: var(--light-800);
+  --color-light-700: var(--light-700);
+  --color-light-500: var(--light-500);
+  --color-light-400: var(--light-400);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -743,15 +728,4 @@ body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-}
-
-@layer base {
-  * {
-    border-color: var(--border);
-    outline: 50% solid var(--ring);
-  }
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
 }

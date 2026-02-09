@@ -70,7 +70,7 @@ const LocalSearchbar = ({
         placeholder={placeholder}
         value={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
-        className='paragraph-regular no-focus placeholder background-light800_darkgradient border-none outline-none shadow-none grow'
+        className='paragraph-regular no-focus placeholder  text-dark400_light700 border-none outline-none shadow-none grow bg-transparent'
       />
       {iconPosition === 'right' && (
         <Image
