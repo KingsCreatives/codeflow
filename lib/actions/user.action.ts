@@ -4,7 +4,6 @@ import { connectDatabase } from '../db/dbcheck';
 import { prisma } from '@/lib/db/client';
 import { Prisma } from '@prisma/client';
 import { assignBadges } from '../utils';
-import { BADGE_CRITERIA } from '@/constants';
 
 import {
   CreateUserParams,
@@ -18,7 +17,6 @@ import {
 import { revalidatePath } from 'next/cache';
 import { QuestionWithDetails, SavedQuestionsResponse } from '../shared.types';
 import { sortByUpvotesAndViews } from '../utils';
-import { upvoteAnswer } from './answer.action';
 
 export async function getUserById(params: any) {
   try {
@@ -370,7 +368,10 @@ export async function getUserInfo(params: GetUserStatsParams) {
       (acc, curr) => acc + curr.views,
       0,
     );
-    const answerUpvotes = answerStats.reduce((acc,curr) => acc + curr._count.upvotes, 0)
+    const answerUpvotes = answerStats.reduce(
+      (acc, curr) => acc + curr._count.upvotes,
+      0,
+    );
 
     const badgeCounts = assignBadges({
       criteria: [
@@ -388,7 +389,7 @@ export async function getUserInfo(params: GetUserStatsParams) {
       totalAnswers,
       totalUpvotes: questionUpvotes + answerUpvotes,
       totalViews: questionViews,
-      badgeCounts
+      badgeCounts,
     };
   } catch (error) {
     console.error('Error fetching user info:', error);
@@ -399,63 +400,54 @@ export async function getUserInfo(params: GetUserStatsParams) {
 export async function getAllUserQuestions(params: GetUserStatsParams) {
   try {
     await connectDatabase();
-    const { userId, page = 1, pageSize = 10 } = params;
 
+    let { userId } = params;
+    const { page = 1, pageSize = 10 } = params;
     const skipAmount = (page - 1) * pageSize;
 
+    if (userId.startsWith('user_')) {
+      const user = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { id: true },
+      });
+      if (user) {
+        userId = user.id;
+      } else {
+        return { totalQuestions: 0, questions: [], isNext: false };
+      }
+    }
+
     const totalQuestions = await prisma.question.count({
-      where: {
-        author: { id: userId },
-      },
+      where: { authorId: userId },
     });
 
     const userQuestions = await prisma.question.findMany({
-      where: {
-        author: { id: userId },
-      },
-      orderBy: { createdAt: 'desc', views: 'desc' },
+      where: { authorId: userId },
+      orderBy: { createdAt: 'desc' },
       skip: skipAmount,
       take: pageSize,
       include: {
-        tags: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        upvotes: { select: { id: true } },
-        downvotes: { select: { id: true } },
-        author: {
-          select: {
-            id: true,
-            clerkId: true,
-            name: true,
-            picture: true,
-          },
-        },
-        _count: {
-          select: {
-            answers: true,
-            upvotes: true,
-          },
-        },
+        tags: true,
+        author: true,
+        upvotes: true,
+        downvotes: true,
+        _count: { select: { answers: true } },
       },
     });
-
-    const sortedQuestions = sortByUpvotesAndViews(userQuestions);
 
     const isNext = totalQuestions > skipAmount + userQuestions.length;
 
     return {
-      questions: sortedQuestions,
+      totalQuestions,
+      questions: userQuestions,
       isNext,
     };
   } catch (error) {
     console.error('Error fetching user questions:', error);
     return {
+      totalQuestions: 0,
       questions: [],
       isNext: false,
-      error: error instanceof Error ? error.message : String(error),
     };
   }
 }
@@ -464,16 +456,28 @@ export async function getAllUserAnswers(params: GetUserStatsParams) {
   try {
     await connectDatabase();
 
-    const { userId, page = 1, pageSize = 10 } = params;
-
+    let { userId } = params;
+    const { page = 1, pageSize = 10 } = params;
     const skipAmount = (page - 1) * pageSize;
 
+    if (userId.startsWith('user_')) {
+      const user = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { id: true },
+      });
+      if (user) {
+        userId = user.id;
+      } else {
+        return { answers: [], isNext: false };
+      }
+    }
+
     const totalAnswers = await prisma.answer.count({
-      where: { author: { id: userId } },
+      where: { authorId: userId },
     });
 
     const userAnswers = await prisma.answer.findMany({
-      where: { author: { id: userId } },
+      where: { authorId: userId },
       skip: skipAmount,
       take: pageSize,
       include: {
@@ -484,22 +488,20 @@ export async function getAllUserAnswers(params: GetUserStatsParams) {
         upvotes: true,
         _count: { select: { upvotes: true } },
       },
+      orderBy: { upvotes: { _count: 'desc' } },
     });
-
-    const sortedAnswer = sortByUpvotesAndViews(userAnswers);
 
     const isNext = totalAnswers > skipAmount + userAnswers.length;
 
     return {
-      answers: sortedAnswer,
+      answers: userAnswers,
       isNext,
     };
   } catch (error) {
-    console.error('Error fetching user questions:', error);
+    console.error('Error fetching user answers:', error);
     return {
       answers: [],
       isNext: false,
-      error: error instanceof Error ? error.message : String(error),
     };
   }
 }

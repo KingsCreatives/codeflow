@@ -8,7 +8,7 @@ interface MetricProps {
   title : string
   href?: string
   textStyles?: string
-  isAuthor : Boolean 
+  isAuthor?: Boolean 
 }
 
 const metricContent = ({imgUrl, alt, value, title, href, textStyles, isAuthor}: MetricProps) => {

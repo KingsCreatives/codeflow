@@ -20,28 +20,31 @@ const UserAnswersTab = async ({
   const result = await getAllUserAnswers({ userId, page });
 
   return (
-    <>
-      {result.answers?.map((answer) => (
-        <AnswerCard
-          key={answer.id}
-          clerkId={clerkId}
-          id={answer.id}
-          title={answer.question.title}
-          question={answer.question}
-          author={answer.author}
-          voteCount={answer.upvotes.length}
-          createdAt={answer.createdAt}
-        />
-      ))}
+    <div className='mt-5 flex flex-col gap-6'>
+      {result.answers?.length > 0 ? (
+        result.answers.map((answer) => (
+          <AnswerCard
+            key={answer.id}
+            clerkId={clerkId}
+            id={answer.id}
+            question={answer.question}
+            author={answer.author}
+            title={answer.question.title}
+            content={answer.content} 
+            voteCount={answer.upvotes.length}
+            createdAt={answer.createdAt}
+          />
+        ))
+      ) : (
+        <div className='paragraph-regular text-dark200_light800 mx-auto max-w-4xl text-center'>
+          You have not answered any questions yet.
+        </div>
+      )}
+
       <div className='mt-10'>
-        <Pagination
-          pageNumber={
-            resolvedSearchParams?.page ? +resolvedSearchParams.page : 1
-          }
-          isNext={result.isNext}
-        />
+        <Pagination pageNumber={page} isNext={result.isNext} />
       </div>
-    </>
+    </div>
   );
 };
 
