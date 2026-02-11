@@ -12,12 +12,21 @@ import {
   EditQuestionParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
+import { RecommendedParams } from '../shared.types';
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     await connectDatabase();
 
-    const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+    const { searchQuery, filter, page = 1, pageSize = 20, userId } = params;
+
+    if (filter === 'recommended') {
+      if (userId) {
+        return await getRecommendedQuestions(params);
+      } else {
+        return { questions: [], isNext: false };
+      }
+    }
 
     const skipPages = (page - 1) * pageSize;
 
@@ -302,7 +311,7 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     } else {
       updateQuery = { downvotes: { connect: { id: userId } } };
       authorRepChange = -2;
-      voterRepChange = -1; 
+      voterRepChange = -1;
     }
 
     const question = await prisma.question.findUnique({
@@ -432,5 +441,110 @@ export async function getTopQuestions() {
     return topQuestions;
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function getRecommendedQuestions(params: GetQuestionsParams) {
+  try {
+    await connectDatabase();
+
+    const { userId, page = 1, pageSize = 20, searchQuery } = params;
+
+    if (!userId) {
+      return { questions: [], isNext: false };
+    }
+
+    const userInteractions = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      include: {
+        Interaction: {
+          include: {
+            question: {
+              include: {
+                tags: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!userInteractions) {
+      throw new Error('User has not interacted with any question yet');
+    }
+
+    const userTags = userInteractions.Interaction.reduce(
+      (tags, interactions) => {
+        if (interactions.question) {
+          interactions.question.tags.forEach((tag) => {
+            tags.add(tag.id);
+          });
+        }
+        return tags;
+      },
+      new Set<string>(),
+    );
+
+    const tagList = Array.from(userTags);
+
+    if (tagList.length === 0) {
+      return { questions: [], isNext: false };
+    }
+
+    const skipAmount = (page - 1) * pageSize;
+
+    const recommendedQuestions = await prisma.question.findMany({
+      where: {
+        AND: [
+          {
+            tags: {
+              some: {
+                id: { in: tagList },
+              },
+            },
+          },
+          {
+            author: {
+              clerkId: { not: userId },
+            },
+          },
+        ],
+
+        ...(searchQuery
+          ? {
+              OR: [
+                { title: { contains: searchQuery, mode: 'insensitive' } },
+                { content: { contains: searchQuery, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+      },
+      include: {
+        tags: true,
+        author: true,
+        upvotes: true,
+        downvotes: true,
+        _count: { select: { answers: true } },
+      },
+      skip: skipAmount,
+      take: pageSize,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const totalQuestions = await prisma.question.count({
+      where: {
+        tags: { some: { id: { in: tagList } } },
+        author: { clerkId: { not: userId } },
+      },
+    });
+
+    const isNext = totalQuestions > skipAmount + recommendedQuestions.length;
+
+    return { questions: recommendedQuestions, isNext };
+  } catch (error) {
+    console.error('Error getting recommended questions:', error);
+    throw error;
   }
 }

@@ -61,6 +61,7 @@ export interface RecommendedParams {
   page?: number;
   pageSize?: number;
   searchQuery?: string;
+  isNext?: boolean;
 }
 
 export interface ViewQuestionParams {
@@ -78,6 +79,7 @@ export interface GetQuestionsParams {
   pageSize?: number;
   searchQuery?: string;
   filter?: string;
+  userId?:string;
 }
 
 export interface CreateQuestionParams {

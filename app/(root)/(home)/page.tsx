@@ -11,17 +11,21 @@ import { getQuestions } from '@/lib/actions/question.action';
 import { SearchParamsProps } from '@/types';
 import Pagination from '@/components/shared/Pagination';
 import { Metadata } from 'next';
+import { auth } from '@clerk/nextjs/server';
 
 export const medata: Metadata = {
   title: "Home | Codeflow",
 }
 
 export default async function Home({ searchParams }: SearchParamsProps) {
+  
+  const {userId} = await auth()
   const resolvedSearchParams = await searchParams;
   const { questions: fetchedQuestions = [], isNext } = await getQuestions({
     searchQuery: resolvedSearchParams.q as string,
     filter: resolvedSearchParams.filter as string,
     page: resolvedSearchParams.page ? +resolvedSearchParams.page : 1,
+    userId: userId || undefined
   });
 
   return (

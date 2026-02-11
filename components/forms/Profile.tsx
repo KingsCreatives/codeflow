@@ -79,14 +79,14 @@ const Profile = ({ clerkId, user }: Props) => {
           name='name'
           render={({ field }) => (
             <FormItem className='space-y-3'>
-              <FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>
                 name <span className='text-primary500'>*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder='name'
                   {...field}
-                  className='no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-14'
+                  className='no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-14'
                 />
               </FormControl>
               <FormMessage />
@@ -99,14 +99,14 @@ const Profile = ({ clerkId, user }: Props) => {
           name='username'
           render={({ field }) => (
             <FormItem className='space-y-3'>
-              <FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>
                 username <span className='text-primary500'>*</span>
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder='your username'
                   {...field}
-                  className='no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-14'
+                  className='no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-14'
                 />
               </FormControl>
               <FormMessage />
@@ -119,13 +119,15 @@ const Profile = ({ clerkId, user }: Props) => {
           name='portfolioWebsite'
           render={({ field }) => (
             <FormItem className='space-y-3'>
-              <FormLabel>Porfolio URL</FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>
+                Porfolio URL
+              </FormLabel>
               <FormControl>
                 <Input
                   type='url'
                   placeholder='Portfolio URL'
                   {...field}
-                  className='no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-14'
+                  className='no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-14'
                 />
               </FormControl>
               <FormMessage />
@@ -138,12 +140,14 @@ const Profile = ({ clerkId, user }: Props) => {
           name='location'
           render={({ field }) => (
             <FormItem className='space-y-3'>
-              <FormLabel>location</FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>
+                location
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder='Your location'
                   {...field}
-                  className='no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-14'
+                  className='no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-14'
                 />
               </FormControl>
               <FormMessage />
@@ -156,12 +160,14 @@ const Profile = ({ clerkId, user }: Props) => {
           name='bio'
           render={({ field }) => (
             <FormItem className='space-y-3'>
-              <FormLabel>bio</FormLabel>
+              <FormLabel className='paragraph-semibold text-dark400_light800'>
+                bio
+              </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder='bio'
                   {...field}
-                  className='no-focus paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 min-h-14'
+                  className='no-focus paragraph-regular light-border-2 background-light800_dark300 text-dark300_light700 min-h-14'
                 />
               </FormControl>
               <FormMessage />
