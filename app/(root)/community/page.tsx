@@ -8,7 +8,7 @@ import Pagination from '@/components/shared/Pagination';
 import Link from 'next/link';
 import { Metadata } from 'next';
 
-export const medata: Metadata = {
+export const metadata: Metadata = {
   title: 'Community | Codeflow',
 };
 
