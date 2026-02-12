@@ -12,7 +12,6 @@ import {
   EditQuestionParams,
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
-import { RecommendedParams } from '../shared.types';
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {

@@ -12,8 +12,6 @@ import {
 import { formUrlQuery } from '@/lib/utils';
 import {
   useSearchParams,
-  usePathname,
-  useParams,
   useRouter,
 } from 'next/navigation';
 interface FilterProps {

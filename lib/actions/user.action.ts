@@ -16,7 +16,6 @@ import {
 } from '../shared.types';
 import { revalidatePath } from 'next/cache';
 import { QuestionWithDetails, SavedQuestionsResponse } from '../shared.types';
-import { sortByUpvotesAndViews } from '../utils';
 
 export async function getUserById(params: any) {
   try {

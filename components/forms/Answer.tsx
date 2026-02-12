@@ -82,7 +82,7 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/gemini`,
         {
           method: 'POST',
           body: JSON.stringify({ question }),
@@ -194,7 +194,7 @@ const Answer = ({ authorId, question, questionId }: AnswerProps) => {
 
           <Button
             type='submit'
-            className='primary-gradient w-fit text-light-900'
+            className='primary-gradient w-fit text-light-900 cursor-pointer'
             disabled={isSubmitting}
           >
             {isSubmitting ? (

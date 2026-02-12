@@ -1,20 +1,16 @@
 'use client';
 import { HomePageFilters } from '@/constants/filters';
 import { Button } from '@/components/ui/button';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { formUrlQuery, removeKeysFromQuery } from '@/lib/utils';
+import { formUrlQuery } from '@/lib/utils';
 
 const HomeFilters = () => {
 
   const [active, setActive] = useState('');
 
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const query = searchParams.get('q');
-
-  const [search, setSearch] = useState(query || '');
 
   const handleTypeClick = (item: string) => {
     if (active === item) {

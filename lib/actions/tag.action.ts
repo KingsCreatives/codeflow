@@ -9,7 +9,6 @@ import {
   GetQuestionsByTagIdParams,
   QuestionWithDetails,
 } from '../shared.types';
-import { saveQuestion } from './user.action';
 
 export async function getUserFrequentTags(params: GetTopInteractedTagsParams) {
   try {

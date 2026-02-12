@@ -72,7 +72,6 @@ const Question = ({ type, userId, questionDetails }: Props) => {
 
         router.push(`/question/${parsedQuestion.id}`);
       } else {
-        // 1. SAFETY CHECK: Ensure userId exists
         if (!userId) {
           return toast.error('Authentication Error', {
             description: 'You must be logged in to ask a question.',
@@ -83,7 +82,7 @@ const Question = ({ type, userId, questionDetails }: Props) => {
           title: values.title,
           content: values.explanation,
           tags: values.tags,
-          author: userId, // 2. FIX: Pass ID directly, DO NOT use JSON.parse()
+          author: userId, 
           path: pathname,
         });
 
@@ -117,7 +116,7 @@ const Question = ({ type, userId, questionDetails }: Props) => {
               </FormLabel>
               <FormControl className='mt-3.5'>
                 <Input
-                  className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
+                  className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-14 border'
                   placeholder='How do I use express as a custom server in NextJS?'
                   {...field}
                 />
@@ -203,7 +202,7 @@ const Question = ({ type, userId, questionDetails }: Props) => {
 
               <FormControl className='mt-3.5'>
                 <Input
-                  className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border'
+                  className='no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-14 border'
                   placeholder='Add tags...'
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && field.name === 'tags') {
@@ -271,7 +270,7 @@ const Question = ({ type, userId, questionDetails }: Props) => {
 
         <Button
           type='submit'
-          className='primary-gradient w-fit text-light-900 !text-light-900'
+          className='primary-gradient w-fit text-light-900 cursor-pointer'
           disabled={isSubmitting}
         >
           {isSubmitting ? (

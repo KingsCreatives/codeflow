@@ -1,4 +1,3 @@
-// lib/dbCheck.ts
 import { prisma } from "./client";
 
 let connected = false;
@@ -16,7 +15,7 @@ export async function connectDatabase(): Promise<boolean> {
   }
 
   try {
-    await prisma.$queryRaw`SELECT 1`; // Lightweight query
+    await prisma.$queryRaw`SELECT 1`; 
     return true;
   } catch (err) {
     console.error("❌ DB health check failed", err);

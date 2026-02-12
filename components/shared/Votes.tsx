@@ -145,7 +145,6 @@ const Votes = ({
   return (
     <div className='flex gap-5'>
       <div className='flex-center gap-2.5'>
-        {/* Upvote Section */}
         <div className='flex-center gap-1.5'>
           <Image
             src={
@@ -164,7 +163,6 @@ const Votes = ({
           </div>
         </div>
 
-        {/* Downvote Section */}
         <div className='flex-center gap-1.5'>
           <Image
             src={
@@ -184,7 +182,6 @@ const Votes = ({
         </div>
       </div>
 
-      {/* Save Section */}
       {type === 'Question' && (
         <Image
           src={

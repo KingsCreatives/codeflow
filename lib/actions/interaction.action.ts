@@ -11,7 +11,6 @@ export async function trackQuestionViews(
 
     const { userId, questionId } = params;
 
-    // Check if this user has already viewed the question
     const existingInteraction = await prisma.interaction.findFirst({
       where: {
         userId: userId ?? undefined,
