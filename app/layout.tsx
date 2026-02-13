@@ -2,23 +2,13 @@ import type { Metadata } from "next";
 import {
   ClerkProvider,
 } from "@clerk/nextjs";
-import { Inter, Space_Grotesk } from "next/font/google";
 
 import "../styles/prism.css";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-grotesk",
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
-});
+const inter = { variable: 'font-sans' };
+const spaceGrotesk = { variable: 'font-sans' };
 
 export const metadata: Metadata = {
   title: "CodeFlow",

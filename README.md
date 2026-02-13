@@ -1,4 +1,3 @@
-
 <div align="center">
 
   <h1>CodeFlow</h1>
@@ -17,12 +16,18 @@
   <br />
 
   <p align="center">
-    <a href="https://your-demo-link.com">View Demo</a>
-    ·
-    <a href="https://github.com/KingsCreatives/codeflow/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/KingsCreatives/codeflow/issues">Request Feature</a>
-  </p>
+  <a href="https://codeflow-xi.vercel.app/">
+    <img src="https://img.shields.io/badge/View%20Demo-Visit%20Site-2ea44f?style=for-the-badge&logo=vercel&logoColor=white" alt="View Demo" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/KingsCreatives/codeflow/issues">
+    <img src="https://img.shields.io/badge/Bug_Report-d73a49?style=for-the-badge&logo=github&logoColor=white" alt="Report Bug" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/KingsCreatives/codeflow/issues">
+    <img src="https://img.shields.io/badge/Request_Feature-6f42c1?style=for-the-badge&logo=github&logoColor=white" alt="Request Feature" />
+  </a>
+</p>
 </div>
 
 <br />
@@ -32,7 +37,6 @@
 **CodeFlow** is a community-driven Q&A platform designed for developers to share knowledge, solve problems, and build reputation.
 
 Unlike standard forums, CodeFlow leverages an **intelligent recommendation engine**. By tracking user interactions and tag engagement, the system learns your tech stack (e.g., `React`, `Docker`, `Rust`) to curate a personalized feed. Whether you're debugging a complex distributed system or centering a `div`, CodeFlow surfaces the most relevant solutions for you.
-
 
 ## 🏗 System Architecture
 
@@ -57,32 +61,31 @@ A custom-built engine analyzes your reading history and interaction patterns to 
 
 ### ⚡ Global & Local Search
 
-* **Global Search:** Query the entire database for questions, users, or tags.
-* **Local Filters:** Sort results dynamically by *Newest*, *Most Frequent*, *Unanswered*, or *Recommended*.
+- **Global Search:** Query the entire database for questions, users, or tags.
+- **Local Filters:** Sort results dynamically by _Newest_, _Most Frequent_, _Unanswered_, or _Recommended_.
 
 ### 💬 Community Interaction
 
-* **Markdown Editor:** Rich text support with syntax highlighting for code blocks.
-* **Voting System:** Reputation-based upvote/downvote mechanism.
-* **Views & Stats:** Real-time engagement metrics for every question.
+- **Markdown Editor:** Rich text support with syntax highlighting for code blocks.
+- **Voting System:** Reputation-based upvote/downvote mechanism.
+- **Views & Stats:** Real-time engagement metrics for every question.
 
 ### 👤 Developer Profile & Reputation
 
-* **Portfolio Showcase:** Display your bio, location, and links.
-* **Gamification:** Earn badges (Bronze, Silver, Gold) and reputation points based on community validation of your answers.
-
+- **Portfolio Showcase:** Display your bio, location, and links.
+- **Gamification:** Earn badges (Bronze, Silver, Gold) and reputation points based on community validation of your answers.
 
 ## 🛠 Tech Stack
 
-| Category | Technology | Description |
-| --- | --- | --- |
-| **Frontend** | Next.js 15 (App Router) | Server Components & Client Components |
-| **Styling** | Tailwind CSS & Shadcn UI | Responsive, accessible UI components |
-| **Backend** | Server Actions | Server-side mutations without API routes |
-| **Database** | PostgreSQL (NeonDB) | Serverless SQL database |
-| **DevOps** | Docker | Multi-stage build containerization |
-| **ORM** | Prisma | Type-safe database access |
-| **Auth** | Clerk | Authentication & User Management |
+| Category     | Technology               | Description                              |
+| ------------ | ------------------------ | ---------------------------------------- |
+| **Frontend** | Next.js 15 (App Router)  | Server Components & Client Components    |
+| **Styling**  | Tailwind CSS & Shadcn UI | Responsive, accessible UI components     |
+| **Backend**  | Server Actions           | Server-side mutations without API routes |
+| **Database** | PostgreSQL (NeonDB)      | Serverless SQL database                  |
+| **DevOps**   | Docker                   | Multi-stage build containerization       |
+| **ORM**      | Prisma                   | Type-safe database access                |
+| **Auth**     | Clerk                    | Authentication & User Management         |
 
 ## Screenshots
 
@@ -91,8 +94,8 @@ A custom-built engine analyzes your reading history and interaction patterns to 
 <br>
 
 ![Home Feed](./public/Home.png)
-</details>
 
+</details>
 
 ## 💻 Getting Started
 
@@ -100,10 +103,10 @@ You can run CodeFlow locally using standard Node.js or via Docker.
 
 ### Prerequisites
 
-* Node.js `v18+`
-* Docker (Optional)
-* PostgreSQL database URL
-* [Clerk](https://clerk.dev/) account keys
+- Node.js `v18+`
+- Docker (Optional)
+- PostgreSQL database URL
+- [Clerk](https://clerk.dev/) account keys
 
 ### Environment Setup
 
@@ -127,45 +130,44 @@ NEXT_PUBLIC_TINY_EDITOR_API_KEY=...
 ### Option 1: Standard Setup (Node.js)
 
 1. **Install dependencies**
+
 ```bash
 npm install
 
 ```
 
-
 2. **Initialize Database**
+
 ```bash
 npx prisma db push
 npx prisma db seed
 
 ```
 
-
 3. **Run the server**
+
 ```bash
 npm run dev
 
 ```
-
-
 
 ### Option 2: Docker Setup 🐳
 
 CodeFlow includes a multi-stage `Dockerfile` optimized for production performance.
 
 1. **Build the image**
+
 ```bash
 docker build -t codeflow .
 
 ```
 
-
 2. **Run the container**
+
 ```bash
 docker run -p 3000:3000 --env-file .env codeflow
 
 ```
-
 
 Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) to view the app.
 
@@ -182,7 +184,6 @@ Contributions are welcomed! Please follow these steps:
 5. Submit a pull request.
 
 ---
-
 
 <div align="center">
 <sub>Built with ❤️ by <a href="https://github.com/KingsCreatives">KingsCreatives</a></sub>
